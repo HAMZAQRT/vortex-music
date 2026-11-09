@@ -10,6 +10,7 @@ import {
 } from "../../auth";
 
 import SignOutButton from "../../components/auth/SignOutButton";
+import { getSessionRole } from "../../lib/auth/roles";
 
 export const instant = false;
 
@@ -115,7 +116,9 @@ export default async function AccountPage() {
 
             <Row
               label="Role"
-              value="USER"
+              value={
+                getSessionRole(user)
+              }
             />
 
           </div>

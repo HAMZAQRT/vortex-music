@@ -153,7 +153,7 @@ export default function DebugDashboard() {
         </div>
       </header>
 
-      <section className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <Link
           href="/debug/performance"
           className="rounded-3xl border border-cyan-500/10 bg-cyan-500/5 p-4 transition hover:bg-cyan-500/10"
@@ -164,6 +164,19 @@ export default function DebugDashboard() {
 
           <p className="mt-2 text-sm text-white/45">
             Runtime, network and memory
+          </p>
+        </Link>
+
+        <Link
+          href="/debug/auth"
+          className="rounded-3xl border border-purple-500/10 bg-purple-500/5 p-4 transition hover:bg-purple-500/10"
+        >
+          <p className="text-xs font-black uppercase tracking-widest text-purple-400">
+            Auth
+          </p>
+
+          <p className="mt-2 text-sm text-white/45">
+            Session and RBAC inspector
           </p>
         </Link>
 

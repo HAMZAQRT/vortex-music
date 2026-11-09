@@ -25,6 +25,21 @@ export const {
   },
 
   callbacks: {
+    async jwt({
+      token,
+    }) {
+      const roleToken =
+        token as typeof token & {
+          role?: string;
+        };
+
+      if (!roleToken.role) {
+        roleToken.role = "USER";
+      }
+
+      return roleToken;
+    },
+
     async session({
       session,
       token,
@@ -36,6 +51,19 @@ export const {
         session.user.id =
           token.sub;
       }
+
+      const sessionUser =
+        session.user as typeof session.user & {
+          role: "USER" | "CREATOR" | "ARTIST" | "MODERATOR" | "ADMIN";
+        };
+
+      const roleToken =
+        token as typeof token & {
+          role?: "USER" | "CREATOR" | "ARTIST" | "MODERATOR" | "ADMIN";
+        };
+
+      sessionUser.role =
+        roleToken.role ?? "USER";
 
       return session;
     },
