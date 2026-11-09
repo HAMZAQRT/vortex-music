@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePlayer } from "../../context/PlayerContext";
+import { useLibrary } from "../../context/LibraryContext";
 
 function formatTime(seconds: number) {
   const safeSeconds = Math.max(0, Math.floor(seconds));
@@ -14,6 +15,11 @@ function formatTime(seconds: number) {
 }
 
 export default function PlayerPage() {
+  const {
+    isLiked,
+    toggleLike,
+  } = useLibrary();
+
   const {
     queue,
     currentTrack,
@@ -86,10 +92,23 @@ export default function PlayerPage() {
             </div>
 
             <button
-              aria-label="Like track"
-              className="grid h-11 w-11 place-items-center rounded-full border border-white/10 text-xl"
+              onClick={() =>
+                toggleLike(currentTrack.id)
+              }
+              aria-label={
+                isLiked(currentTrack.id)
+                  ? "Unlike track"
+                  : "Like track"
+              }
+              className={`grid h-11 w-11 place-items-center rounded-full border text-xl ${
+                isLiked(currentTrack.id)
+                  ? "border-pink-500/30 bg-pink-500/10 text-pink-400"
+                  : "border-white/10 text-white"
+              }`}
             >
-              ♡
+              {isLiked(currentTrack.id)
+                ? "♥"
+                : "♡"}
             </button>
           </div>
 

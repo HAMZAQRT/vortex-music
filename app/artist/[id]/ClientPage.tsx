@@ -6,6 +6,7 @@ import AppShell from "../../../components/AppShell";
 import { artists, albums } from "../../../data/catalog";
 import { tracks } from "../../../data/tracks";
 import { usePlayer } from "../../../context/PlayerContext";
+import { useLibrary } from "../../../context/LibraryContext";
 
 export default function ArtistClientPage({
   id,
@@ -13,6 +14,10 @@ export default function ArtistClientPage({
   id: string;
 }) {
   const { playTrack } = usePlayer();
+  const {
+    isFollowing,
+    toggleFollow,
+  } = useLibrary();
 
   const artist = artists.find(
     (item) => item.id === id,
@@ -83,8 +88,17 @@ export default function ArtistClientPage({
         </div>
 
         <div className="mt-5 flex gap-3">
-          <button className="rounded-full bg-white px-6 py-3 text-sm font-black text-black">
-            Follow
+          <button
+            onClick={() => toggleFollow(artist.id)}
+            className={`rounded-full px-6 py-3 text-sm font-black ${
+              isFollowing(artist.id)
+                ? "border border-white/15 bg-white/5 text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            {isFollowing(artist.id)
+              ? "Following"
+              : "Follow"}
           </button>
 
           {artistTracks[0] && (

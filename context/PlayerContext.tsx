@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import { tracks, type Track } from "../data/tracks";
+import { useLibrary } from "./LibraryContext";
 
 type RepeatMode = "off" | "all" | "one";
 
@@ -40,6 +41,7 @@ export function PlayerProvider({
   children: ReactNode;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { addToHistory } = useLibrary();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgressState] = useState(0);
@@ -166,6 +168,7 @@ export function PlayerProvider({
       setCurrentIndex(index);
       setProgressState(0);
       setIsPlaying(true);
+      addToHistory(track.id);
     }
   }
 
