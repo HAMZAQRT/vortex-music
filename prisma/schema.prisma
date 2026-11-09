@@ -48,11 +48,7 @@ model Account {
   id_token          String?
   session_state     String?
 
-  user User @relation(
-    fields: [userId],
-    references: [id],
-    onDelete: Cascade
-  )
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -64,11 +60,7 @@ model Session {
   userId       String
   expires      DateTime
 
-  user User @relation(
-    fields: [userId],
-    references: [id],
-    onDelete: Cascade
-  )
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -106,11 +98,7 @@ model Album {
   updatedAt   DateTime @updatedAt
 
   artistId    String
-  artist      Artist   @relation(
-    fields: [artistId],
-    references: [id],
-    onDelete: Cascade
-  )
+  artist      Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
   tracks      Track[]
 
@@ -129,18 +117,10 @@ model Track {
   updatedAt   DateTime @updatedAt
 
   artistId    String
-  artist      Artist   @relation(
-    fields: [artistId],
-    references: [id],
-    onDelete: Cascade
-  )
+  artist      Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
   albumId     String?
-  album       Album?   @relation(
-    fields: [albumId],
-    references: [id],
-    onDelete: SetNull
-  )
+  album       Album? @relation(fields: [albumId], references: [id], onDelete: SetNull)
 
   playlistTracks PlaylistTrack[]
   likes          Like[]
@@ -160,11 +140,7 @@ model Playlist {
   updatedAt   DateTime @updatedAt
 
   ownerId     String
-  owner       User     @relation(
-    fields: [ownerId],
-    references: [id],
-    onDelete: Cascade
-  )
+  owner       User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   tracks      PlaylistTrack[]
 
@@ -177,17 +153,9 @@ model PlaylistTrack {
   position    Int
   addedAt     DateTime @default(now())
 
-  playlist    Playlist @relation(
-    fields: [playlistId],
-    references: [id],
-    onDelete: Cascade
-  )
+  playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
 
-  track       Track @relation(
-    fields: [trackId],
-    references: [id],
-    onDelete: Cascade
-  )
+  track       Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
 
   @@id([playlistId, trackId])
   @@unique([playlistId, position])
@@ -199,17 +167,9 @@ model Like {
   trackId     String
   createdAt   DateTime @default(now())
 
-  user        User @relation(
-    fields: [userId],
-    references: [id],
-    onDelete: Cascade
-  )
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  track       Track @relation(
-    fields: [trackId],
-    references: [id],
-    onDelete: Cascade
-  )
+  track       Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
 
   @@id([userId, trackId])
   @@index([trackId])
@@ -220,17 +180,9 @@ model Follow {
   artistId    String
   createdAt   DateTime @default(now())
 
-  user        User @relation(
-    fields: [userId],
-    references: [id],
-    onDelete: Cascade
-  )
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  artist      Artist @relation(
-    fields: [artistId],
-    references: [id],
-    onDelete: Cascade
-  )
+  artist      Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
   @@id([userId, artistId])
   @@index([artistId])
@@ -243,17 +195,9 @@ model ListeningHistory {
   userId      String
   trackId     String
 
-  user        User @relation(
-    fields: [userId],
-    references: [id],
-    onDelete: Cascade
-  )
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  track       Track @relation(
-    fields: [trackId],
-    references: [id],
-    onDelete: Cascade
-  )
+  track       Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
 
   @@index([userId, playedAt])
   @@index([trackId])
