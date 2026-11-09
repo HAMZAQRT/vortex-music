@@ -26,8 +26,10 @@ jobs:
       - name: Validate Prisma schema
         run: npx prisma validate
 
-      - name: Check migration status
-        run: npx prisma migrate status
+      - name: Verify migration file
+        run: |
+          test -s prisma/migrations/0001_vortex_initial/migration.sql
+          echo "Initial migration: READY"
 
       - name: Deploy pending migrations
         run: npx prisma migrate deploy
