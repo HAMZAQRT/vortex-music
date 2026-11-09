@@ -40,6 +40,9 @@ jobs:
       - name: Database health
         run: npx tsx scripts/database-health.ts
 
+      - name: Auth Prisma Adapter health
+        run: npx tsx scripts/auth-adapter-health.ts
+
       - name: Lint
         run: npm run lint
 
