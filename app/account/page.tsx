@@ -94,9 +94,7 @@ export default async function AccountPage() {
 
             <Row
               label="User ID"
-              value={
-                user.id
-              }
+              value={user.id ?? "Unknown"}
             />
 
             <Row
