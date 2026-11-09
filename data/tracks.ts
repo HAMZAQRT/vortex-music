@@ -5,6 +5,7 @@ export type Track = {
   album: string;
   duration: number;
   color: string;
+  audioSrc: string;
 };
 
 export const tracks: Track[] = [
@@ -15,6 +16,7 @@ export const tracks: Track[] = [
     album: "Night Signals",
     duration: 224,
     color: "from-violet-500 to-indigo-900",
+    audioSrc: "/audio/midnight-echo.mp3",
   },
   {
     id: "neon-dreams",
@@ -23,6 +25,7 @@ export const tracks: Track[] = [
     album: "Electric Hearts",
     duration: 198,
     color: "from-fuchsia-500 to-purple-900",
+    audioSrc: "/audio/neon-dreams.mp3",
   },
   {
     id: "after-dark",
@@ -31,6 +34,7 @@ export const tracks: Track[] = [
     album: "Horizons",
     duration: 241,
     color: "from-cyan-500 to-blue-900",
+    audioSrc: "/audio/after-dark.mp3",
   },
   {
     id: "gravity",
@@ -39,5 +43,6 @@ export const tracks: Track[] = [
     album: "Orbit",
     duration: 215,
     color: "from-orange-500 to-rose-900",
+    audioSrc: "/audio/gravity.mp3",
   },
 ];

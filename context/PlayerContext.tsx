@@ -3,6 +3,8 @@
 import {
   createContext,
   useContext,
+  useEffect,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -37,6 +39,7 @@ export function PlayerProvider({
 }: {
   children: ReactNode;
 }) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgressState] = useState(0);
@@ -46,8 +49,83 @@ export function PlayerProvider({
 
   const currentTrack = tracks[currentIndex];
 
+  useEffect(() => {
+    const audio = new Audio();
+    audio.preload = "metadata";
+    audioRef.current = audio;
+
+    const handleTimeUpdate = () => {
+      setProgressState(audio.currentTime || 0);
+    };
+
+    const handleEnded = () => {
+      setCurrentIndex((index) =>
+        index === tracks.length - 1 ? 0 : index + 1,
+      );
+      setProgressState(0);
+    };
+
+    const handlePlay = () => {
+      setIsPlaying(true);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("play", handlePlay);
+    audio.addEventListener("pause", handlePause);
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("play", handlePlay);
+      audio.removeEventListener("pause", handlePause);
+      audioRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio) return;
+
+    const shouldResume = !audio.paused;
+
+    audio.src = currentTrack.audioSrc;
+    audio.load();
+    setProgressState(0);
+
+    if (shouldResume) {
+      audio.play().catch(() => {
+        setIsPlaying(false);
+      });
+    }
+  }, [currentTrack.audioSrc]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+
+    if (!audio) return;
+
+    audio.volume = volume / 100;
+  }, [volume]);
+
   function togglePlay() {
-    setIsPlaying((value) => !value);
+    const audio = audioRef.current;
+
+    if (!audio) return;
+
+    if (audio.paused) {
+      audio.play().catch(() => {
+        setIsPlaying(false);
+      });
+    } else {
+      audio.pause();
+    }
   }
 
   function next() {
@@ -92,9 +170,18 @@ export function PlayerProvider({
   }
 
   function setProgress(value: number) {
-    setProgressState(
-      Math.max(0, Math.min(value, currentTrack.duration)),
+    const safeValue = Math.max(
+      0,
+      Math.min(value, currentTrack.duration),
     );
+
+    setProgressState(safeValue);
+
+    const audio = audioRef.current;
+
+    if (audio) {
+      audio.currentTime = safeValue;
+    }
   }
 
   function setVolume(value: number) {
