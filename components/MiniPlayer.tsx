@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { usePlayer } from "../context/PlayerContext";
 
 export default function MiniPlayer() {
-  const [playing, setPlaying] = useState(false);
+  const {
+    currentTrack,
+    isPlaying,
+    togglePlay,
+    next,
+  } = usePlayer();
 
   return (
     <div className="fixed bottom-[76px] left-3 right-3 z-40 mx-auto max-w-2xl">
@@ -12,24 +18,42 @@ export default function MiniPlayer() {
         <div className="h-[2px] w-1/3 bg-gradient-to-r from-violet-500 to-cyan-400" />
 
         <div className="flex items-center gap-3 p-2">
-          <div className="h-12 w-12 shrink-0 rounded-xl bg-gradient-to-br from-violet-500 to-blue-700" />
 
-          <div className="min-w-0 flex-1">
+          <Link
+            href="/player"
+            className={`h-12 w-12 shrink-0 rounded-xl bg-gradient-to-br ${currentTrack.color}`}
+            aria-label="Open player"
+          />
+
+          <Link
+            href="/player"
+            className="min-w-0 flex-1"
+          >
             <p className="truncate text-sm font-semibold">
-              Midnight Echo
+              {currentTrack.title}
             </p>
+
             <p className="truncate text-xs text-white/40">
-              Vortex Originals
+              {currentTrack.artist}
             </p>
-          </div>
+          </Link>
 
           <button
-            onClick={() => setPlaying(!playing)}
-            aria-label={playing ? "Pause" : "Play"}
+            onClick={togglePlay}
+            aria-label={isPlaying ? "Pause" : "Play"}
             className="grid h-10 w-10 place-items-center rounded-full bg-white font-bold text-black"
           >
-            {playing ? "Ⅱ" : "▶"}
+            {isPlaying ? "Ⅱ" : "▶"}
           </button>
+
+          <button
+            onClick={next}
+            aria-label="Next track"
+            className="grid h-10 w-8 place-items-center text-white/70"
+          >
+            ›
+          </button>
+
         </div>
       </div>
     </div>
