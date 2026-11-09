@@ -5,6 +5,7 @@ import "./globals.css";
 import { PlayerProvider } from "../context/PlayerContext";
 import { LibraryProvider } from "../context/LibraryContext";
 import { DebugProvider } from "../context/DebugContext";
+import WebVitalsMonitor from "../components/debug/WebVitalsMonitor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <DebugProvider>
+          <WebVitalsMonitor />
           <LibraryProvider>
             <PlayerProvider>
               {children}

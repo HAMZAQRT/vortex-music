@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { usePlayer } from "../../context/PlayerContext";
@@ -151,6 +152,34 @@ export default function DebugDashboard() {
           {enabled ? "ACTIVE" : "PAUSED"}
         </div>
       </header>
+
+      <section className="mb-4 grid grid-cols-2 gap-3">
+        <Link
+          href="/debug/performance"
+          className="rounded-3xl border border-cyan-500/10 bg-cyan-500/5 p-4 transition hover:bg-cyan-500/10"
+        >
+          <p className="text-xs font-black uppercase tracking-widest text-cyan-400">
+            Performance
+          </p>
+
+          <p className="mt-2 text-sm text-white/45">
+            Runtime, network and memory
+          </p>
+        </Link>
+
+        <Link
+          href="/debug/errors"
+          className="rounded-3xl border border-red-500/10 bg-red-500/5 p-4 transition hover:bg-red-500/10"
+        >
+          <p className="text-xs font-black uppercase tracking-widest text-red-400">
+            Error Center
+          </p>
+
+          <p className="mt-2 text-sm text-white/45">
+            Errors, events and export
+          </p>
+        </Link>
+      </section>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Metric
