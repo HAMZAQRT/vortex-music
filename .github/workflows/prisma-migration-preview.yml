@@ -1,10 +1,13 @@
-name: Prisma Migration Preview
+name: Prisma Initial Migration
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  preview:
+  create-migration:
     runs-on: ubuntu-latest
 
     env:
@@ -13,6 +16,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -26,26 +31,37 @@ jobs:
       - name: Validate Prisma schema
         run: npx prisma validate
 
-      - name: Create migration preview
+      - name: Generate initial migration
         run: |
-          mkdir -p prisma/migration-preview
+          mkdir -p prisma/migrations/0001_vortex_initial
+
           npx prisma migrate diff \
             --from-empty \
             --to-schema prisma/schema.prisma \
             --script \
-            --output prisma/migration-preview/migration.sql
+            --output prisma/migrations/0001_vortex_initial/migration.sql
 
-      - name: Show migration summary
+      - name: Verify migration
         run: |
-          echo "Migration SQL lines:"
-          wc -l prisma/migration-preview/migration.sql
-          echo ""
-          echo "Created tables:"
-          grep -E '^CREATE TABLE' prisma/migration-preview/migration.sql || true
+          test -s prisma/migrations/0001_vortex_initial/migration.sql
 
-      - name: Upload migration preview
-        uses: actions/upload-artifact@v4
-        with:
-          name: vortex-initial-migration
-          path: prisma/migration-preview/migration.sql
-          if-no-files-found: error
+          echo "Migration lines:"
+          wc -l prisma/migrations/0001_vortex_initial/migration.sql
+
+          echo ""
+          echo "Tables:"
+          grep -E '^CREATE TABLE' prisma/migrations/0001_vortex_initial/migration.sql || true
+
+      - name: Commit migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add prisma/migrations/0001_vortex_initial/migration.sql
+
+          if git diff --cached --quiet; then
+            echo "Migration already exists."
+          else
+            git commit -m "db: add initial Vortex migration"
+            git push origin main
+          fi
