@@ -9,6 +9,8 @@ import {
 
 import GitHubSignIn from "../../components/auth/GitHubSignIn";
 
+export const instant = false;
+
 export default async function LoginPage() {
   const session =
     await auth();
@@ -120,4 +122,5 @@ function IdentityFeature({
 
     </div>
   );
+
 }

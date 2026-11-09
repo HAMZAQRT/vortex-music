@@ -10,6 +10,8 @@ import {
 
 import SignOutButton from "../../components/auth/SignOutButton";
 
+export const instant = false;
+
 export default async function AccountPage() {
   const session =
     await auth();
@@ -176,4 +178,5 @@ function Row({
 
     </div>
   );
+
 }
