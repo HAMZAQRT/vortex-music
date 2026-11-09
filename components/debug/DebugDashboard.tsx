@@ -153,7 +153,7 @@ export default function DebugDashboard() {
         </div>
       </header>
 
-      <section className="mb-4 grid grid-cols-2 gap-3">
+      <section className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Link
           href="/debug/performance"
           className="rounded-3xl border border-cyan-500/10 bg-cyan-500/5 p-4 transition hover:bg-cyan-500/10"
@@ -164,6 +164,19 @@ export default function DebugDashboard() {
 
           <p className="mt-2 text-sm text-white/45">
             Runtime, network and memory
+          </p>
+        </Link>
+
+        <Link
+          href="/debug/network"
+          className="rounded-3xl border border-violet-500/10 bg-violet-500/5 p-4 transition hover:bg-violet-500/10"
+        >
+          <p className="text-xs font-black uppercase tracking-widest text-violet-400">
+            Network
+          </p>
+
+          <p className="mt-2 text-sm text-white/45">
+            API requests and latency
           </p>
         </Link>
 

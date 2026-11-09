@@ -11,6 +11,7 @@ import {
 
 import { tracks, type Track } from "../data/tracks";
 import { useLibrary } from "./LibraryContext";
+import { useDebug } from "./DebugContext";
 
 type RepeatMode = "off" | "all" | "one";
 
@@ -42,6 +43,7 @@ export function PlayerProvider({
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { addToHistory } = useLibrary();
+  const { log } = useDebug();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgressState] = useState(0);
@@ -119,13 +121,55 @@ export function PlayerProvider({
   function togglePlay() {
     const audio = audioRef.current;
 
-    if (!audio) return;
+    if (!audio) {
+      log(
+        "error",
+        "Audio element unavailable",
+      );
+      return;
+    }
 
     if (audio.paused) {
-      audio.play().catch(() => {
-        setIsPlaying(false);
-      });
+      log(
+        "player",
+        "PLAY requested",
+        {
+          trackId:
+            currentTrack.id,
+        },
+      );
+
+      audio
+        .play()
+        .catch((error) => {
+          setIsPlaying(false);
+
+          log(
+            "error",
+            "Audio playback failed",
+            {
+              trackId:
+                currentTrack.id,
+
+              error:
+                error instanceof Error
+                  ? error.message
+                  : String(
+                      error,
+                    ),
+            },
+          );
+        });
     } else {
+      log(
+        "player",
+        "PAUSE requested",
+        {
+          trackId:
+            currentTrack.id,
+        },
+      );
+
       audio.pause();
     }
   }
@@ -168,7 +212,23 @@ export function PlayerProvider({
       setCurrentIndex(index);
       setProgressState(0);
       setIsPlaying(true);
-      addToHistory(track.id);
+
+      addToHistory(
+        track.id,
+      );
+
+      log(
+        "player",
+        "TRACK_CHANGE",
+        {
+          trackId:
+            track.id,
+          title:
+            track.title,
+          artist:
+            track.artist,
+        },
+      );
     }
   }
 
@@ -185,6 +245,17 @@ export function PlayerProvider({
     if (audio) {
       audio.currentTime = safeValue;
     }
+
+    log(
+      "player",
+      "SEEK",
+      {
+        trackId:
+          currentTrack.id,
+        position:
+          safeValue,
+      },
+    );
   }
 
   function setVolume(value: number) {
