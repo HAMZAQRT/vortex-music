@@ -37,6 +37,9 @@ jobs:
       - name: Prisma generate
         run: npx prisma generate
 
+      - name: Database health
+        run: npx tsx scripts/database-health.ts
+
       - name: Lint
         run: npm run lint
 
