@@ -166,8 +166,95 @@ export default function ServerInspector() {
   }
 
   useEffect(() => {
-    void probe();
-  }, []);
+    let active = true;
+
+    Promise.resolve().then(async () => {
+      if (!active) {
+        return;
+      }
+
+      const started =
+        performance.now();
+
+      try {
+        const response =
+          await fetch(
+            "/api/debug/system",
+            {
+              cache: "no-store",
+            },
+          );
+
+        const duration =
+          performance.now() -
+          started;
+
+        if (!active) {
+          return;
+        }
+
+        setLatency(duration);
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP ${response.status}`,
+          );
+        }
+
+        const payload =
+          (await response.json()) as SystemResponse;
+
+        if (!active) {
+          return;
+        }
+
+        setData(payload);
+
+        setStatus(
+          payload.ok
+            ? "healthy"
+            : "error",
+        );
+
+        log(
+          "network",
+          "SERVER_HEALTH_AUTO",
+          {
+            ok: payload.ok,
+            node:
+              payload.runtime.node,
+            latencyMs:
+              Math.round(
+                duration,
+              ),
+          },
+        );
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+
+        const message =
+          error instanceof Error
+            ? error.message
+            : String(error);
+
+        setStatus("error");
+
+        log(
+          "error",
+          "Automatic server diagnostic probe failed",
+          {
+            error: message,
+          },
+        );
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [log]);
 
   const memoryPercent =
     data &&
