@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import Link from "next/link";
 import {
   redirect,
@@ -12,6 +13,8 @@ import GitHubSignIn from "../../components/auth/GitHubSignIn";
 export const instant = false;
 
 export default async function LoginPage() {
+  await connection();
+
   const session =
     await auth();
 

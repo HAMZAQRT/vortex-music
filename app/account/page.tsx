@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -13,6 +14,8 @@ import SignOutButton from "../../components/auth/SignOutButton";
 export const instant = false;
 
 export default async function AccountPage() {
+  await connection();
+
   const session =
     await auth();
 
@@ -59,6 +62,7 @@ export default async function AccountPage() {
                 alt="Profile"
                 width={112}
                 height={112}
+                loading="eager"
                 className="h-full w-full object-cover"
               />
             ) : (
