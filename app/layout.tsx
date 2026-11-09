@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { PlayerProvider } from "../context/PlayerContext";
 import { LibraryProvider } from "../context/LibraryContext";
+import { DebugProvider } from "../context/DebugContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,11 +31,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        <LibraryProvider>
-          <PlayerProvider>
-            {children}
-          </PlayerProvider>
-        </LibraryProvider>
+        <DebugProvider>
+          <LibraryProvider>
+            <PlayerProvider>
+              {children}
+            </PlayerProvider>
+          </LibraryProvider>
+        </DebugProvider>
       </body>
     </html>
   );
