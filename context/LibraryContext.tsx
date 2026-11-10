@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useReducer,
   type ReactNode,
 } from "react";
@@ -14,6 +15,10 @@ type LibraryState = {
 };
 
 type LibraryAction =
+  | {
+      type: "SET_LIKES";
+      trackIds: string[];
+    }
   | {
       type: "TOGGLE_LIKE";
       trackId: string;
@@ -34,11 +39,21 @@ type LibraryContextValue = {
   likedTrackIds: string[];
   followedArtistIds: string[];
   historyTrackIds: string[];
-  isLiked: (trackId: string) => boolean;
-  isFollowing: (artistId: string) => boolean;
-  toggleLike: (trackId: string) => void;
-  toggleFollow: (artistId: string) => void;
-  addToHistory: (trackId: string) => void;
+  isLiked: (
+    trackId: string,
+  ) => boolean;
+  isFollowing: (
+    artistId: string,
+  ) => boolean;
+  toggleLike: (
+    trackId: string,
+  ) => void;
+  toggleFollow: (
+    artistId: string,
+  ) => void;
+  addToHistory: (
+    trackId: string,
+  ) => void;
   clearHistory: () => void;
 };
 
@@ -53,31 +68,47 @@ function reducer(
   action: LibraryAction,
 ): LibraryState {
   switch (action.type) {
+    case "SET_LIKES":
+      return {
+        ...state,
+        likedTrackIds:
+          action.trackIds,
+      };
+
     case "TOGGLE_LIKE": {
-      const exists = state.likedTrackIds.includes(
-        action.trackId,
-      );
+      const exists =
+        state.likedTrackIds.includes(
+          action.trackId,
+        );
 
       return {
         ...state,
         likedTrackIds: exists
           ? state.likedTrackIds.filter(
-              (id) => id !== action.trackId,
+              (id) =>
+                id !==
+                action.trackId,
             )
-          : [action.trackId, ...state.likedTrackIds],
+          : [
+              action.trackId,
+              ...state.likedTrackIds,
+            ],
       };
     }
 
     case "TOGGLE_FOLLOW": {
-      const exists = state.followedArtistIds.includes(
-        action.artistId,
-      );
+      const exists =
+        state.followedArtistIds.includes(
+          action.artistId,
+        );
 
       return {
         ...state,
         followedArtistIds: exists
           ? state.followedArtistIds.filter(
-              (id) => id !== action.artistId,
+              (id) =>
+                id !==
+                action.artistId,
             )
           : [
               action.artistId,
@@ -86,24 +117,24 @@ function reducer(
       };
     }
 
-    case "ADD_HISTORY": {
+    case "ADD_HISTORY":
       return {
         ...state,
         historyTrackIds: [
           action.trackId,
           ...state.historyTrackIds.filter(
-            (id) => id !== action.trackId,
+            (id) =>
+              id !==
+              action.trackId,
           ),
         ].slice(0, 30),
       };
-    }
 
-    case "CLEAR_HISTORY": {
+    case "CLEAR_HISTORY":
       return {
         ...state,
         historyTrackIds: [],
       };
-    }
 
     default:
       return state;
@@ -111,41 +142,155 @@ function reducer(
 }
 
 const LibraryContext =
-  createContext<LibraryContextValue | null>(null);
+  createContext<
+    LibraryContextValue | null
+  >(null);
 
 export function LibraryProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [state, dispatch] = useReducer(
-    reducer,
-    initialState,
-  );
+  const [state, dispatch] =
+    useReducer(
+      reducer,
+      initialState,
+    );
 
-  function isLiked(trackId: string) {
-    return state.likedTrackIds.includes(trackId);
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadLikes() {
+      try {
+        const response =
+          await fetch(
+            "/api/library/likes",
+            {
+              method: "GET",
+              cache: "no-store",
+            },
+          );
+
+        if (
+          !response.ok ||
+          cancelled
+        ) {
+          return;
+        }
+
+        const data =
+          (await response.json()) as {
+            likedTrackIds?:
+              unknown;
+          };
+
+        if (
+          Array.isArray(
+            data.likedTrackIds,
+          ) &&
+          data.likedTrackIds.every(
+            (id) =>
+              typeof id ===
+              "string",
+          )
+        ) {
+          dispatch({
+            type: "SET_LIKES",
+            trackIds:
+              data.likedTrackIds,
+          });
+        }
+      } catch {
+        // Keep the usable local state
+        // when the network is unavailable.
+      }
+    }
+
+    void loadLikes();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function isLiked(
+    trackId: string,
+  ) {
+    return state.likedTrackIds.includes(
+      trackId,
+    );
   }
 
-  function isFollowing(artistId: string) {
-    return state.followedArtistIds.includes(artistId);
+  function isFollowing(
+    artistId: string,
+  ) {
+    return state.followedArtistIds.includes(
+      artistId,
+    );
   }
 
-  function toggleLike(trackId: string) {
+  function toggleLike(
+    trackId: string,
+  ) {
+    const wasLiked =
+      state.likedTrackIds.includes(
+        trackId,
+      );
+
     dispatch({
       type: "TOGGLE_LIKE",
       trackId,
     });
+
+    void persistLike(
+      trackId,
+      wasLiked,
+    );
   }
 
-  function toggleFollow(artistId: string) {
+  async function persistLike(
+    trackId: string,
+    wasLiked: boolean,
+  ) {
+    try {
+      const response =
+        await fetch(
+          `/api/tracks/${encodeURIComponent(
+            trackId,
+          )}/like`,
+          {
+            method:
+              wasLiked
+                ? "DELETE"
+                : "POST",
+          },
+        );
+
+      if (!response.ok) {
+        throw new Error(
+          "Like persistence failed",
+        );
+      }
+    } catch {
+      dispatch({
+        type: "TOGGLE_LIKE",
+        trackId,
+      });
+    }
+  }
+
+  function toggleFollow(
+    artistId: string,
+  ) {
     dispatch({
       type: "TOGGLE_FOLLOW",
       artistId,
     });
   }
 
-  function addToHistory(trackId: string) {
+  function addToHistory(
+    trackId: string,
+  ) {
     dispatch({
       type: "ADD_HISTORY",
       trackId,
@@ -161,9 +306,12 @@ export function LibraryProvider({
   return (
     <LibraryContext.Provider
       value={{
-        likedTrackIds: state.likedTrackIds,
-        followedArtistIds: state.followedArtistIds,
-        historyTrackIds: state.historyTrackIds,
+        likedTrackIds:
+          state.likedTrackIds,
+        followedArtistIds:
+          state.followedArtistIds,
+        historyTrackIds:
+          state.historyTrackIds,
         isLiked,
         isFollowing,
         toggleLike,
@@ -178,7 +326,10 @@ export function LibraryProvider({
 }
 
 export function useLibrary() {
-  const context = useContext(LibraryContext);
+  const context =
+    useContext(
+      LibraryContext,
+    );
 
   if (!context) {
     throw new Error(
