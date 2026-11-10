@@ -143,26 +143,77 @@ export async function PATCH(
     );
   }
 
-  await prisma.$transaction(
-    trackIds.map(
-      (trackId, position) =>
-        prisma.playlistTrack.update({
-          where: {
-            playlistId_trackId: {
-              playlistId,
-              trackId,
+  try {
+    await prisma.$transaction(
+      async (tx) => {
+        // First move every track away from
+        // the unique playlist positions.
+        for (
+          let index = 0;
+          index < trackIds.length;
+          index += 1
+        ) {
+          await tx.playlistTrack.update({
+            where: {
+              playlistId_trackId: {
+                playlistId,
+                trackId:
+                  trackIds[index],
+              },
             },
-          },
 
-          data: {
-            position,
-          },
-        }),
-    ),
-  );
+            data: {
+              position:
+                100000 + index,
+            },
+          });
+        }
 
-  return NextResponse.json({
-    reordered: true,
-    trackIds,
-  });
+        // Then assign the requested
+        // final positions.
+        for (
+          let position = 0;
+          position < trackIds.length;
+          position += 1
+        ) {
+          await tx.playlistTrack.update({
+            where: {
+              playlistId_trackId: {
+                playlistId,
+                trackId:
+                  trackIds[position],
+              },
+            },
+
+            data: {
+              position,
+            },
+          });
+        }
+      },
+    );
+
+    return NextResponse.json({
+      reordered: true,
+      trackIds,
+    });
+  } catch (error) {
+    console.error(
+      "[VORTEX:PLAYLIST_REORDER] FAILED",
+      error instanceof Error
+        ? error.message
+        : "Unknown error",
+    );
+
+    return NextResponse.json(
+      {
+        error:
+          "Unable to reorder playlist",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+
 }
