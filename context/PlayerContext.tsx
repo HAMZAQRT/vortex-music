@@ -141,6 +141,11 @@ export function PlayerProvider({
 
       audio
         .play()
+        .then(() => {
+          addToHistory(
+            currentTrack.id,
+          );
+        })
         .catch((error) => {
           setIsPlaying(false);
 
@@ -212,10 +217,6 @@ export function PlayerProvider({
       setCurrentIndex(index);
       setProgressState(0);
       setIsPlaying(true);
-
-      addToHistory(
-        track.id,
-      );
 
       log(
         "player",
