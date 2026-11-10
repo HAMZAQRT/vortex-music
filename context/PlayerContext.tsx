@@ -42,6 +42,7 @@ export function PlayerProvider({
   children: ReactNode;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const currentTrackIdRef = useRef(tracks[0].id);
   const { addToHistory } = useLibrary();
   const { log } = useDebug();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -52,6 +53,9 @@ export function PlayerProvider({
   const [repeat, setRepeat] = useState<RepeatMode>("off");
 
   const currentTrack = tracks[currentIndex];
+
+  currentTrackIdRef.current =
+    currentTrack.id;
 
   useEffect(() => {
     const audio = new Audio();
@@ -71,6 +75,10 @@ export function PlayerProvider({
 
     const handlePlay = () => {
       setIsPlaying(true);
+
+      addToHistory(
+        currentTrackIdRef.current,
+      );
     };
 
     const handlePause = () => {
@@ -141,11 +149,6 @@ export function PlayerProvider({
 
       audio
         .play()
-        .then(() => {
-          addToHistory(
-            currentTrack.id,
-          );
-        })
         .catch((error) => {
           setIsPlaying(false);
 
