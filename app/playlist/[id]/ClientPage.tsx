@@ -67,6 +67,9 @@ export default function PlaylistClientPage({
       null,
     );
 
+  const [reordering, setReordering] =
+    useState(false);
+
   const [error, setError] =
     useState("");
 
@@ -201,6 +204,106 @@ export default function PlaylistClientPage({
       );
     } finally {
       setWorkingTrack(null);
+    }
+  }
+
+  async function moveTrack(
+    trackId: string,
+    direction: "up" | "down",
+  ) {
+    if (
+      reordering ||
+      !data
+    ) {
+      return;
+    }
+
+    const orderedIds =
+      data.playlist.tracks.map(
+        (item) =>
+          item.track.id,
+      );
+
+    const currentIndex =
+      orderedIds.indexOf(
+        trackId,
+      );
+
+    if (
+      currentIndex === -1
+    ) {
+      return;
+    }
+
+    const targetIndex =
+      direction === "up"
+        ? currentIndex - 1
+        : currentIndex + 1;
+
+    if (
+      targetIndex < 0 ||
+      targetIndex >=
+        orderedIds.length
+    ) {
+      return;
+    }
+
+    const nextOrder =
+      [...orderedIds];
+
+    [
+      nextOrder[currentIndex],
+      nextOrder[targetIndex],
+    ] = [
+      nextOrder[targetIndex],
+      nextOrder[currentIndex],
+    ];
+
+    setReordering(true);
+    setError("");
+
+    try {
+      const response =
+        await fetch(
+          `/api/library/playlists/${encodeURIComponent(
+            id,
+          )}/reorder`,
+          {
+            method: "PATCH",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              trackIds:
+                nextOrder,
+            }),
+          },
+        );
+
+      const payload =
+        (await response.json()) as {
+          error?: string;
+        };
+
+      if (!response.ok) {
+        throw new Error(
+          payload.error ||
+            "Unable to reorder tracks",
+        );
+      }
+
+      await loadPlaylist();
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Unable to reorder tracks",
+      );
+    } finally {
+      setReordering(false);
     }
   }
 
@@ -395,7 +498,7 @@ export default function PlaylistClientPage({
               ({
                 track,
                 position,
-              }) => {
+              }, index) => {
                 const localTrack =
                   findLocalTrack(
                     track.id,
@@ -450,6 +553,46 @@ export default function PlaylistClientPage({
                       </p>
                     </button>
 
+                    <div className="flex shrink-0 gap-1">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          void moveTrack(
+                            track.id,
+                            "up",
+                          )
+                        }
+                        disabled={
+                          reordering ||
+                          index === 0
+                        }
+                        className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-sm text-white/60 disabled:opacity-20"
+                        aria-label={`Move ${track.title} up`}
+                      >
+                        ↑
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          void moveTrack(
+                            track.id,
+                            "down",
+                          )
+                        }
+                        disabled={
+                          reordering ||
+                          index ===
+                            playlist.tracks.length -
+                              1
+                        }
+                        className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-sm text-white/60 disabled:opacity-20"
+                        aria-label={`Move ${track.title} down`}
+                      >
+                        ↓
+                      </button>
+                    </div>
+
                     <button
                       type="button"
                       onClick={() =>
@@ -459,7 +602,8 @@ export default function PlaylistClientPage({
                       }
                       disabled={
                         workingTrack !==
-                        null
+                          null ||
+                        reordering
                       }
                       className="grid h-10 w-10 place-items-center rounded-full border border-red-500/15 text-red-400 disabled:opacity-40"
                       aria-label={`Remove ${track.title}`}
