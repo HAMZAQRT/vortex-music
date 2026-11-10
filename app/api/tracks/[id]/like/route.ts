@@ -117,29 +117,54 @@ export async function POST(
     return identity.error;
   }
 
-  await prisma.like.upsert({
-    where: {
-      userId_trackId: {
+  try {
+    await prisma.like.upsert({
+      where: {
+        userId_trackId: {
+          userId:
+            identity.userId,
+          trackId:
+            identity.trackId,
+        },
+      },
+
+      update: {},
+
+      create: {
         userId:
           identity.userId,
         trackId:
           identity.trackId,
       },
-    },
+    });
 
-    update: {},
+    console.log(
+      "[VORTEX:LIKE] POST OK",
+      identity.trackId,
+    );
 
-    create: {
-      userId:
-        identity.userId,
-      trackId:
-        identity.trackId,
-    },
-  });
+    return NextResponse.json({
+      liked: true,
+    });
+  } catch (error) {
+    console.error(
+      "[VORTEX:LIKE] POST FAILED",
+      identity.trackId,
+      error instanceof Error
+        ? error.message
+        : "Unknown error",
+    );
 
-  return NextResponse.json({
-    liked: true,
-  });
+    return NextResponse.json(
+      {
+        error:
+          "Like persistence failed",
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 }
 
 export async function DELETE(
