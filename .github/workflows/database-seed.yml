@@ -1,0 +1,58 @@
+name: Vortex Database Seed
+
+on:
+  workflow_dispatch:
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Seed Vortex catalog
+        run: npx prisma db seed
+
+      - name: Verify catalog
+        run: |
+          npx tsx -e '
+          import { prisma } from "./lib/db/prisma";
+
+          async function main() {
+            const artists = await prisma.artist.count();
+            const albums = await prisma.album.count();
+            const tracks = await prisma.track.count();
+
+            console.log("CATALOG_VERIFY=OK");
+            console.log("ARTISTS=" + artists);
+            console.log("ALBUMS=" + albums);
+            console.log("TRACKS=" + tracks);
+          }
+
+          main()
+            .catch((error) => {
+              console.error("CATALOG_VERIFY=FAILED");
+              console.error(error instanceof Error ? error.message : String(error));
+              process.exitCode = 1;
+            })
+            .finally(async () => {
+              await prisma.$disconnect();
+            });
+          '
