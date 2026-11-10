@@ -1,5 +1,6 @@
 import AppShell from "../../components/AppShell";
 import LibraryDashboard from "../../components/library/LibraryDashboard";
+import PlaylistManager from "../../components/library/PlaylistManager";
 
 export default function LibraryPage() {
   return (
@@ -19,6 +20,7 @@ export default function LibraryPage() {
       </header>
 
       <LibraryDashboard />
+      <PlaylistManager />
     </AppShell>
   );
 }
