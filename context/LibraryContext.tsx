@@ -32,6 +32,10 @@ type LibraryAction =
       artistId: string;
     }
   | {
+      type: "SET_HISTORY";
+      trackIds: string[];
+    }
+  | {
       type: "ADD_HISTORY";
       trackId: string;
     }
@@ -127,6 +131,13 @@ function reducer(
             ],
       };
     }
+
+    case "SET_HISTORY":
+      return {
+        ...state,
+        historyTrackIds:
+          action.trackIds,
+      };
 
     case "ADD_HISTORY":
       return {
@@ -263,8 +274,55 @@ export function LibraryProvider({
       }
     }
 
+    async function loadHistory() {
+      try {
+        const response =
+          await fetch(
+            "/api/library/history",
+            {
+              method: "GET",
+              cache: "no-store",
+            },
+          );
+
+        if (
+          !response.ok ||
+          cancelled
+        ) {
+          return;
+        }
+
+        const data =
+          (await response.json()) as {
+            historyTrackIds?:
+              unknown;
+          };
+
+        if (
+          Array.isArray(
+            data.historyTrackIds,
+          ) &&
+          data.historyTrackIds.every(
+            (id) =>
+              typeof id ===
+              "string",
+          )
+        ) {
+          dispatch({
+            type: "SET_HISTORY",
+            trackIds:
+              data.historyTrackIds,
+          });
+        }
+      } catch {
+        // Keep the usable local history
+        // when the network is unavailable.
+      }
+    }
+
     void loadLikes();
     void loadFollows();
+    void loadHistory();
 
     return () => {
       cancelled = true;
@@ -394,12 +452,49 @@ export function LibraryProvider({
       type: "ADD_HISTORY",
       trackId,
     });
+
+    void persistHistory(
+      trackId,
+    );
+  }
+
+  async function persistHistory(
+    trackId: string,
+  ) {
+    try {
+      await fetch(
+        `/api/tracks/${encodeURIComponent(
+          trackId,
+        )}/history`,
+        {
+          method: "POST",
+        },
+      );
+    } catch {
+      // History remains usable locally
+      // if the network is unavailable.
+    }
   }
 
   function clearHistory() {
     dispatch({
       type: "CLEAR_HISTORY",
     });
+
+    void persistClearHistory();
+  }
+
+  async function persistClearHistory() {
+    try {
+      await fetch(
+        "/api/library/history",
+        {
+          method: "DELETE",
+        },
+      );
+    } catch {
+      // The local clear remains immediate.
+    }
   }
 
   return (
