@@ -54,8 +54,10 @@ export function PlayerProvider({
 
   const currentTrack = tracks[currentIndex];
 
-  currentTrackIdRef.current =
-    currentTrack.id;
+  useEffect(() => {
+    currentTrackIdRef.current =
+      currentTrack.id;
+  }, [currentTrack.id]);
 
   useEffect(() => {
     const audio = new Audio();
@@ -98,7 +100,7 @@ export function PlayerProvider({
       audio.removeEventListener("pause", handlePause);
       audioRef.current = null;
     };
-  }, []);
+  }, [addToHistory]);
 
   useEffect(() => {
     const audio = audioRef.current;
