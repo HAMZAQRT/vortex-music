@@ -11,6 +11,7 @@ import Link from "next/link";
 import AppShell from "../../../components/AppShell";
 import { tracks as localTracks } from "../../../data/tracks";
 import { usePlayer } from "../../../context/PlayerContext";
+import PlaylistSettings from "../../../components/playlist/PlaylistSettings";
 
 type ApiTrack = {
   id: string;
@@ -323,6 +324,14 @@ export default function PlaylistClientPage({
             ? " track"
             : " tracks"}
         </p>
+
+        <PlaylistSettings
+          playlistId={playlist.id}
+          initialTitle={playlist.title}
+          initialDescription={playlist.description}
+          initialPublic={playlist.public}
+          onSaved={loadPlaylist}
+        />
 
         {playlist.tracks[0] && (
           <button
