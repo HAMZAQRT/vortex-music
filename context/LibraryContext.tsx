@@ -24,6 +24,10 @@ type LibraryAction =
       trackId: string;
     }
   | {
+      type: "SET_FOLLOWS";
+      artistIds: string[];
+    }
+  | {
       type: "TOGGLE_FOLLOW";
       artistId: string;
     }
@@ -95,6 +99,13 @@ function reducer(
             ],
       };
     }
+
+    case "SET_FOLLOWS":
+      return {
+        ...state,
+        followedArtistIds:
+          action.artistIds,
+      };
 
     case "TOGGLE_FOLLOW": {
       const exists =
@@ -206,7 +217,54 @@ export function LibraryProvider({
       }
     }
 
+    async function loadFollows() {
+      try {
+        const response =
+          await fetch(
+            "/api/library/follows",
+            {
+              method: "GET",
+              cache: "no-store",
+            },
+          );
+
+        if (
+          !response.ok ||
+          cancelled
+        ) {
+          return;
+        }
+
+        const data =
+          (await response.json()) as {
+            followedArtistIds?:
+              unknown;
+          };
+
+        if (
+          Array.isArray(
+            data.followedArtistIds,
+          ) &&
+          data.followedArtistIds.every(
+            (id) =>
+              typeof id ===
+              "string",
+          )
+        ) {
+          dispatch({
+            type: "SET_FOLLOWS",
+            artistIds:
+              data.followedArtistIds,
+          });
+        }
+      } catch {
+        // Keep local follow state
+        // when the network is unavailable.
+      }
+    }
+
     void loadLikes();
+    void loadFollows();
 
     return () => {
       cancelled = true;
@@ -282,10 +340,51 @@ export function LibraryProvider({
   function toggleFollow(
     artistId: string,
   ) {
+    const wasFollowing =
+      state.followedArtistIds.includes(
+        artistId,
+      );
+
     dispatch({
       type: "TOGGLE_FOLLOW",
       artistId,
     });
+
+    void persistFollow(
+      artistId,
+      wasFollowing,
+    );
+  }
+
+  async function persistFollow(
+    artistId: string,
+    wasFollowing: boolean,
+  ) {
+    try {
+      const response =
+        await fetch(
+          `/api/artists/${encodeURIComponent(
+            artistId,
+          )}/follow`,
+          {
+            method:
+              wasFollowing
+                ? "DELETE"
+                : "POST",
+          },
+        );
+
+      if (!response.ok) {
+        throw new Error(
+          "Follow persistence failed",
+        );
+      }
+    } catch {
+      dispatch({
+        type: "TOGGLE_FOLLOW",
+        artistId,
+      });
+    }
   }
 
   function addToHistory(
