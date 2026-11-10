@@ -31,14 +31,35 @@ export const {
   callbacks: {
     async jwt({
       token,
+      user,
     }) {
       const roleToken =
         token as typeof token & {
-          role?: string;
+          role?: "USER" | "CREATOR" | "ARTIST" | "MODERATOR" | "ADMIN";
         };
 
-      if (!roleToken.role) {
-        roleToken.role = "USER";
+      const userId =
+        user?.id ??
+        token.sub;
+
+      if (userId) {
+        const databaseUser =
+          await prisma.user.findUnique({
+            where: {
+              id: userId,
+            },
+            select: {
+              role: true,
+            },
+          });
+
+        roleToken.role =
+          databaseUser?.role ??
+          "USER";
+      } else {
+        roleToken.role =
+          roleToken.role ??
+          "USER";
       }
 
       return roleToken;
