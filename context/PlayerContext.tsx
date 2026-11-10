@@ -42,8 +42,14 @@ export function PlayerProvider({
   children: ReactNode;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const currentTrackIdRef = useRef(tracks[0].id);
-  const { addToHistory } = useLibrary();
+  const currentTrackIdRef =
+    useRef(tracks[0].id);
+
+  const { addToHistory } =
+    useLibrary();
+
+  const addToHistoryRef =
+    useRef(addToHistory);
   const { log } = useDebug();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -52,7 +58,18 @@ export function PlayerProvider({
   const [shuffle, setShuffle] = useState(false);
   const [repeat, setRepeat] = useState<RepeatMode>("off");
 
-  const currentTrack = tracks[currentIndex];
+  const currentTrack =
+    tracks[currentIndex];
+
+  useEffect(() => {
+    currentTrackIdRef.current =
+      currentTrack.id;
+  }, [currentTrack.id]);
+
+  useEffect(() => {
+    addToHistoryRef.current =
+      addToHistory;
+  }, [addToHistory]);
 
   useEffect(() => {
     currentTrackIdRef.current =
@@ -78,7 +95,7 @@ export function PlayerProvider({
     const handlePlay = () => {
       setIsPlaying(true);
 
-      addToHistory(
+      addToHistoryRef.current(
         currentTrackIdRef.current,
       );
     };
@@ -100,7 +117,7 @@ export function PlayerProvider({
       audio.removeEventListener("pause", handlePause);
       audioRef.current = null;
     };
-  }, [addToHistory]);
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
