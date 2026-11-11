@@ -33,8 +33,8 @@ const liveRooms = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#070709] pb-40 text-white">
-      <div className="mx-auto max-w-6xl px-5">
+    <>
+      <div>
 
         <header className="flex items-center justify-between py-6">
           <div>
@@ -224,64 +224,6 @@ export default function Home() {
           </div>
         </section>
       </div>
-
-      <div className="fixed bottom-[76px] left-3 right-3 z-40 mx-auto max-w-2xl">
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#19191f]/95 shadow-2xl backdrop-blur-xl">
-
-          <div className="h-[2px] w-1/3 bg-gradient-to-r from-violet-500 to-cyan-400" />
-
-          <div className="flex items-center gap-3 p-2">
-            <div className="h-12 w-12 shrink-0 rounded-xl bg-gradient-to-br from-violet-500 to-blue-700" />
-
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">
-                Midnight Echo
-              </p>
-
-              <p className="truncate text-xs text-white/40">
-                Vortex Originals
-              </p>
-            </div>
-
-            <button
-              aria-label="Play current track"
-              className="grid h-10 w-10 place-items-center rounded-full bg-white font-bold text-black"
-            >
-              ▶
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#09090c]/95 px-4 pb-3 pt-2 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-lg items-center justify-between">
-
-          {[
-            ["⌂", "Home"],
-            ["⌕", "Explore"],
-            ["◉", "Live"],
-            ["♫", "Library"],
-          ].map(([icon, label], index) => (
-            <button
-              key={label}
-              className={`flex min-w-16 flex-col items-center gap-1 text-xs ${
-                index === 0
-                  ? "text-violet-400"
-                  : "text-white/40"
-              }`}
-            >
-              <span className="text-xl">
-                {icon}
-              </span>
-
-              <span>
-                {label}
-              </span>
-            </button>
-          ))}
-
-        </div>
-      </nav>
-    </main>
+    </>
   );
 }

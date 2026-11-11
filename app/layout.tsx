@@ -6,6 +6,7 @@ import { PlayerProvider } from "../context/PlayerContext";
 import { LibraryProvider } from "../context/LibraryContext";
 import { DebugProvider } from "../context/DebugContext";
 import WebVitalsMonitor from "../components/debug/WebVitalsMonitor";
+import AppShell from "../components/AppShell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +39,9 @@ export default function RootLayout({
           <WebVitalsMonitor />
           <LibraryProvider>
             <PlayerProvider>
-              {children}
+              <AppShell>
+                {children}
+              </AppShell>
             </PlayerProvider>
           </LibraryProvider>
         </DebugProvider>

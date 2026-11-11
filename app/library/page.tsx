@@ -1,10 +1,9 @@
-import AppShell from "../../components/AppShell";
 import LibraryDashboard from "../../components/library/LibraryDashboard";
 import PlaylistManager from "../../components/library/PlaylistManager";
 
 export default function LibraryPage() {
   return (
-    <AppShell>
+    <>
       <header className="py-6">
         <p className="text-xs font-black tracking-[0.35em] text-violet-400">
           YOUR VORTEX
@@ -21,6 +20,6 @@ export default function LibraryPage() {
 
       <LibraryDashboard />
       <PlaylistManager />
-    </AppShell>
+    </>
   );
 }

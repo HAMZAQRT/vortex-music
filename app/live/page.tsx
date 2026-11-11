@@ -1,11 +1,8 @@
-import AppShell from "../../components/AppShell";
-
 import LiveDashboard from "../../components/live/LiveDashboard";
 
 export default function LivePage() {
   return (
-    <AppShell>
-
+    <>
       <header className="py-6">
         <p className="text-xs font-black tracking-[0.35em] text-red-400">
           VORTEX LIVE
@@ -21,7 +18,6 @@ export default function LivePage() {
       </header>
 
       <LiveDashboard />
-
-    </AppShell>
+    </>
   );
 }

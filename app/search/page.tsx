@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import AppShell from "../../components/AppShell";
 import { tracks } from "../../data/tracks";
 import { usePlayer } from "../../context/PlayerContext";
 
@@ -24,7 +23,7 @@ export default function SearchPage() {
   }, [query]);
 
   return (
-    <AppShell>
+    <>
       <header className="py-6">
         <p className="text-xs font-black tracking-[0.35em] text-violet-400">
           VORTEX
@@ -95,6 +94,6 @@ export default function SearchPage() {
           })}
         </div>
       </section>
-    </AppShell>
+    </>
   );
 }

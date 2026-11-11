@@ -9,7 +9,7 @@ const items = [
   {
     href: "/search",
     icon: "⌕",
-    label: "Search",
+    label: "Explore",
   },
   {
     href: "/live",
