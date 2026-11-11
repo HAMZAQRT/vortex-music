@@ -10,6 +10,8 @@ import Link from "next/link";
 
 import AppShell from "../AppShell";
 
+import { tracks } from "../../data/tracks";
+
 type Room = {
   id: string;
   title: string;
@@ -201,6 +203,65 @@ export default function LiveHostRoom({
         caught instanceof Error
           ? caught.message
           : "Room update failed",
+      );
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  async function setLiveTrack(
+    trackId: string,
+  ) {
+    if (
+      working ||
+      !room ||
+      !room.isHost ||
+      room.status !== "LIVE"
+    ) {
+      return;
+    }
+
+    setWorking(true);
+    setError("");
+
+    try {
+      const response =
+        await fetch(
+          `/api/live/rooms/${encodeURIComponent(
+            room.id,
+          )}/track`,
+          {
+            method: "PATCH",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              trackId,
+            }),
+          },
+        );
+
+      const payload =
+        (await response.json()) as {
+          error?: string;
+        };
+
+      if (!response.ok) {
+        throw new Error(
+          payload.error ||
+            "Unable to update Live track",
+        );
+      }
+
+      await loadRoom();
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Unable to update Live track",
       );
     } finally {
       setWorking(false);
@@ -518,6 +579,70 @@ export default function LiveHostRoom({
               {error}
             </p>
           )}
+
+        </section>
+      )}
+
+      {room.isHost &&
+        room.status === "LIVE" && (
+        <section className="mt-8">
+
+          <p className="text-xs font-black uppercase tracking-widest text-violet-400">
+            Live Queue
+          </p>
+
+          <h2 className="mt-1 text-xl font-black">
+            Choose Current Track
+          </h2>
+
+          <div className="mt-4 space-y-2">
+            {tracks.map(
+              (track) => {
+                const active =
+                  room.currentTrack
+                    ?.id ===
+                  track.id;
+
+                return (
+                  <button
+                    key={track.id}
+                    type="button"
+                    disabled={working}
+                    onClick={() =>
+                      void setLiveTrack(
+                        track.id,
+                      )
+                    }
+                    className={`flex w-full items-center gap-3 rounded-2xl border p-3 text-left disabled:opacity-40 ${
+                      active
+                        ? "border-violet-500/30 bg-violet-500/10"
+                        : "border-white/5 bg-white/[0.02]"
+                    }`}
+                  >
+                    <div
+                      className={`h-12 w-12 shrink-0 rounded-xl bg-gradient-to-br ${track.color}`}
+                    />
+
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-semibold">
+                        {track.title}
+                      </p>
+
+                      <p className="truncate text-xs text-white/35">
+                        {track.artist}
+                      </p>
+                    </div>
+
+                    <span className="text-xs font-black text-violet-300">
+                      {active
+                        ? "LIVE"
+                        : "Select"}
+                    </span>
+                  </button>
+                );
+              },
+            )}
+          </div>
 
         </section>
       )}
