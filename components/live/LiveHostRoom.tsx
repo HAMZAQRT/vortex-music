@@ -33,6 +33,7 @@ type Room = {
     | null;
 
   isHost: boolean;
+  isJoined: boolean;
 
   host: {
     id: string;
@@ -206,6 +207,59 @@ export default function LiveHostRoom({
     }
   }
 
+  async function changeListenerState() {
+    if (
+      working ||
+      !room ||
+      room.isHost ||
+      room.status !== "LIVE"
+    ) {
+      return;
+    }
+
+    const action =
+      room.isJoined
+        ? "leave"
+        : "join";
+
+    setWorking(true);
+    setError("");
+
+    try {
+      const response =
+        await fetch(
+          `/api/live/rooms/${encodeURIComponent(
+            room.id,
+          )}/${action}`,
+          {
+            method: "POST",
+          },
+        );
+
+      const payload =
+        (await response.json()) as {
+          error?: string;
+        };
+
+      if (!response.ok) {
+        throw new Error(
+          payload.error ||
+            `Unable to ${action} room`,
+        );
+      }
+
+      await loadRoom();
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Listener update failed",
+      );
+    } finally {
+      setWorking(false);
+    }
+  }
+
   if (loading) {
     return (
       <AppShell>
@@ -319,15 +373,59 @@ export default function LiveHostRoom({
       </section>
 
       {!room.isHost && (
-        <section className="mt-6 rounded-3xl border border-amber-500/15 bg-amber-500/5 p-5">
+        <section className="mt-6 rounded-3xl border border-cyan-500/15 bg-cyan-500/5 p-5">
 
-          <p className="text-sm font-bold text-amber-300">
-            Host controls unavailable
+          <p className="text-xs font-black uppercase tracking-widest text-cyan-400">
+            Listener
           </p>
 
-          <p className="mt-2 text-xs leading-5 text-white/35">
-            This room belongs to another creator.
-          </p>
+          {room.status === "LIVE" ? (
+            <>
+              <h2 className="mt-3 text-xl font-black">
+                {room.isJoined
+                  ? "You are in the room"
+                  : "Join this Live Room"}
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-white/35">
+                {room.isJoined
+                  ? "You are counted as an active listener."
+                  : "Join to become an active listener in this room."}
+              </p>
+
+              <button
+                type="button"
+                disabled={working}
+                onClick={() =>
+                  void changeListenerState()
+                }
+                className={`mt-5 w-full rounded-2xl py-4 text-sm font-black disabled:opacity-40 ${
+                  room.isJoined
+                    ? "border border-white/10 bg-white/5 text-white/60"
+                    : "bg-cyan-400 text-black"
+                }`}
+              >
+                {working
+                  ? "Updating..."
+                  : room.isJoined
+                    ? "Leave Room"
+                    : "Join Room"}
+              </button>
+            </>
+          ) : (
+            <p className="mt-3 text-sm text-white/35">
+              This room is not currently live.
+            </p>
+          )}
+
+          {error && (
+            <p
+              aria-live="polite"
+              className="mt-4 text-sm text-red-400"
+            >
+              {error}
+            </p>
+          )}
 
         </section>
       )}
