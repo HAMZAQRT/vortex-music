@@ -223,6 +223,10 @@ model LiveRoom {
   startedAt      DateTime?
   endedAt        DateTime?
 
+  playbackIsPlaying Boolean  @default(false)
+  playbackPositionMs Int     @default(0)
+  playbackUpdatedAt DateTime?
+
   hostId         String
   host           User @relation("LiveRoomHost", fields: [hostId], references: [id], onDelete: Cascade)
 
