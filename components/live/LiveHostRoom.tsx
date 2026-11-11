@@ -209,6 +209,59 @@ export default function LiveHostRoom({
     }
   }
 
+  const roomStatus =
+    room?.status;
+
+  useEffect(() => {
+    if (
+      roomStatus !== "LIVE"
+    ) {
+      return;
+    }
+
+    const intervalId =
+      window.setInterval(
+        () => {
+          if (
+            document.visibilityState ===
+            "visible"
+          ) {
+            void loadRoom();
+          }
+        },
+        5000,
+      );
+
+    const handleVisibilityChange =
+      () => {
+        if (
+          document.visibilityState ===
+          "visible"
+        ) {
+          void loadRoom();
+        }
+      };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
+    );
+
+    return () => {
+      window.clearInterval(
+        intervalId,
+      );
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange,
+      );
+    };
+  }, [
+    roomStatus,
+    loadRoom,
+  ]);
+
   async function setLiveTrack(
     trackId: string,
   ) {
