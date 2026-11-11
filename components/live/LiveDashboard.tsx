@@ -6,7 +6,6 @@ import {
   useState,
 } from "react";
 
-import Link from "next/link";
 
 type LiveRoom = {
   id: string;
@@ -394,12 +393,12 @@ export default function LiveDashboard() {
               The room is saved in PostgreSQL but is not live yet.
             </p>
 
-            <Link
-              href={`/live/room/${createdRoomId}`}
+            <a
+              href={`/live/room/${encodeURIComponent(createdRoomId)}`}
               className="mt-4 inline-flex rounded-full bg-emerald-500 px-5 py-3 text-xs font-black text-black"
             >
               Open Host Control
-            </Link>
+            </a>
 
           </div>
         )}
