@@ -3,12 +3,14 @@
 import {
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
 import Link from "next/link";
 
 import AppShell from "../AppShell";
+import { usePlayer } from "../../context/PlayerContext";
 
 import { tracks } from "../../data/tracks";
 
@@ -68,6 +70,21 @@ export default function LiveHostRoom({
 }: {
   id: string;
 }) {
+  const {
+    currentTrack: playerTrack,
+    isPlaying: playerIsPlaying,
+    progress: playerProgress,
+  } = usePlayer();
+
+  const playerSnapshotRef =
+    useRef({
+      trackId:
+        playerTrack.id,
+      isPlaying:
+        playerIsPlaying,
+      progress:
+        playerProgress,
+    });
   const [
     room,
     setRoom,
@@ -209,6 +226,21 @@ export default function LiveHostRoom({
     }
   }
 
+  useEffect(() => {
+    playerSnapshotRef.current = {
+      trackId:
+        playerTrack.id,
+      isPlaying:
+        playerIsPlaying,
+      progress:
+        playerProgress,
+    };
+  }, [
+    playerTrack.id,
+    playerIsPlaying,
+    playerProgress,
+  ]);
+
   const roomStatus =
     room?.status;
 
@@ -260,6 +292,91 @@ export default function LiveHostRoom({
   }, [
     roomStatus,
     loadRoom,
+  ]);
+
+  useEffect(() => {
+    if (
+      !room ||
+      !room.isHost ||
+      room.status !== "LIVE" ||
+      !room.currentTrack
+    ) {
+      return;
+    }
+
+    const roomId =
+      room.id;
+
+    const liveTrackId =
+      room.currentTrack.id;
+
+    async function publishPlayback() {
+      const snapshot =
+        playerSnapshotRef.current;
+
+      if (
+        snapshot.trackId !==
+        liveTrackId
+      ) {
+        return;
+      }
+
+      try {
+        await fetch(
+          `/api/live/rooms/${encodeURIComponent(
+            roomId,
+          )}/playback`,
+          {
+            method: "PATCH",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              isPlaying:
+                snapshot.isPlaying,
+
+              positionMs:
+                Math.max(
+                  0,
+                  Math.round(
+                    snapshot.progress *
+                      1000,
+                  ),
+                ),
+            }),
+          },
+        );
+      } catch {
+        // The Player remains usable even if
+        // a Live playback snapshot cannot sync.
+      }
+    }
+
+    void publishPlayback();
+
+    const intervalId =
+      window.setInterval(
+        () => {
+          if (
+            document.visibilityState ===
+            "visible"
+          ) {
+            void publishPlayback();
+          }
+        },
+        5000,
+      );
+
+    return () => {
+      window.clearInterval(
+        intervalId,
+      );
+    };
+  }, [
+    room,
   ]);
 
   async function setLiveTrack(
