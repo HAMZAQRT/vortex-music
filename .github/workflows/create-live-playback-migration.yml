@@ -1,0 +1,75 @@
+name: Create Vortex Live Playback Migration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+
+    env:
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Generate Live migration
+        run: |
+          mkdir -p prisma/migrations/0003_vortex_live_playback
+
+          npx prisma migrate diff \
+            --from-config-datasource \
+            --to-schema prisma/schema.prisma \
+            --script \
+            --output prisma/migrations/0003_vortex_live_playback/migration.sql
+
+      - name: Safety check
+        run: |
+          test -s prisma/migrations/0003_vortex_live_playback/migration.sql
+
+          echo "=== MIGRATION ==="
+          cat prisma/migrations/0003_vortex_live_playback/migration.sql
+
+          echo ""
+          echo "=== DESTRUCTIVE CHECK ==="
+
+          if grep -E '^(DROP|TRUNCATE|DELETE FROM)' \
+            prisma/migrations/0003_vortex_live_playback/migration.sql; then
+            echo "ERROR: destructive SQL detected"
+            exit 1
+          else
+            echo "OK: migration contains no DROP/TRUNCATE/DELETE"
+          fi
+
+      - name: Commit Live migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add prisma/migrations/0003_vortex_live_playback/migration.sql
+
+          if git diff --cached --quiet; then
+            echo "Live migration already exists."
+          else
+            git commit -m "db: add Vortex Live playback migration"
+            git push origin main
+          fi
