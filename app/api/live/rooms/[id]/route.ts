@@ -96,13 +96,40 @@ export async function GET(
     );
   }
 
+  const isHost =
+    room.hostId ===
+    session.user.id;
+
+  const participant =
+    isHost
+      ? null
+      : await prisma.liveParticipant.findUnique({
+          where: {
+            roomId_userId: {
+              roomId:
+                room.id,
+              userId:
+                session.user.id,
+            },
+          },
+
+          select: {
+            leftAt: true,
+          },
+        });
+
+  const isJoined =
+    Boolean(
+      participant &&
+      participant.leftAt ===
+        null,
+    );
+
   return NextResponse.json({
     room: {
       ...room,
-
-      isHost:
-        room.hostId ===
-        session.user.id,
+      isHost,
+      isJoined,
     },
   });
 }
