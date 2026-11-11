@@ -457,11 +457,14 @@ export default function LiveDashboard() {
           <div className="mt-4 space-y-3">
             {rooms.map(
               (room) => (
-                <article
+                <a
                   key={
                     room.id
                   }
-                  className="rounded-3xl border border-red-500/10 bg-red-500/[0.04] p-4"
+                  href={`/live/room/${encodeURIComponent(
+                    room.id,
+                  )}`}
+                  className="block rounded-3xl border border-red-500/10 bg-red-500/[0.04] p-4"
                 >
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-red-500" />
@@ -501,7 +504,7 @@ export default function LiveDashboard() {
                       }
                     </p>
                   )}
-                </article>
+                </a>
               ),
             )}
           </div>
