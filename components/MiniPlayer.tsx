@@ -12,7 +12,7 @@ export default function MiniPlayer() {
   } = usePlayer();
 
   return (
-    <div className="fixed bottom-[76px] left-3 right-3 z-40 mx-auto max-w-2xl">
+    <div className="fixed bottom-[88px] left-3 right-3 z-[90] mx-auto max-w-2xl">
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#19191f]/95 shadow-2xl backdrop-blur-xl">
 
         <div className="h-[2px] w-1/3 bg-gradient-to-r from-violet-500 to-cyan-400" />

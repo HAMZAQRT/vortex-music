@@ -1,37 +1,48 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
 const items = [
-  { href: "/", icon: "⌂", label: "Home" },
-  { href: "/search", icon: "⌕", label: "Search" },
-  { href: "/live", icon: "◉", label: "Live" },
-  { href: "/library", icon: "♫", label: "Library" },
-];
+  {
+    href: "/",
+    icon: "⌂",
+    label: "Home",
+  },
+  {
+    href: "/search",
+    icon: "⌕",
+    label: "Search",
+  },
+  {
+    href: "/live",
+    icon: "◉",
+    label: "Live",
+  },
+  {
+    href: "/library",
+    icon: "♫",
+    label: "Library",
+  },
+] as const;
 
 export default function BottomNav() {
-  const pathname = usePathname();
-
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-[#09090c]/95 px-4 pb-3 pt-2 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-lg items-center justify-between">
-        {items.map((item) => {
-          const active = pathname === item.href;
+    <nav
+      aria-label="Main navigation"
+      className="fixed inset-x-0 bottom-0 z-[100] border-t border-white/5 bg-[#09090c]/95 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl"
+    >
+      <div className="mx-auto grid max-w-xl grid-cols-4 gap-1">
+        {items.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            className="relative z-[101] flex min-h-16 touch-manipulation flex-col items-center justify-center gap-1 rounded-2xl text-white/45 active:bg-white/10 active:text-white"
+          >
+            <span className="text-2xl leading-none">
+              {item.icon}
+            </span>
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex min-w-16 flex-col items-center gap-1 text-xs transition ${
-                active ? "text-violet-400" : "text-white/40"
-              }`}
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+            <span className="text-xs font-bold">
+              {item.label}
+            </span>
+          </a>
+        ))}
       </div>
     </nav>
   );
