@@ -12,6 +12,7 @@ import AppShell from "../../../components/AppShell";
 import { tracks as localTracks } from "../../../data/tracks";
 import { usePlayer } from "../../../context/PlayerContext";
 import PlaylistSettings from "../../../components/playlist/PlaylistSettings";
+import PlaylistShareButton from "../../../components/playlist/PlaylistShareButton";
 
 type ApiTrack = {
   id: string;
@@ -427,6 +428,14 @@ export default function PlaylistClientPage({
             ? " track"
             : " tracks"}
         </p>
+
+        <div className="mt-5 flex flex-wrap items-start gap-2">
+          <PlaylistShareButton
+            playlistId={playlist.id}
+            title={playlist.title}
+            isPublic={playlist.public}
+          />
+        </div>
 
         <PlaylistSettings
           playlistId={playlist.id}
