@@ -36,6 +36,13 @@ type Room = {
     | string
     | null;
 
+  playbackIsPlaying: boolean;
+  playbackPositionMs: number;
+
+  playbackUpdatedAt:
+    | string
+    | null;
+
   isHost: boolean;
   isJoined: boolean;
 
@@ -74,6 +81,9 @@ export default function LiveHostRoom({
     currentTrack: playerTrack,
     isPlaying: playerIsPlaying,
     progress: playerProgress,
+    playTrack,
+    setProgress,
+    togglePlay,
   } = usePlayer();
 
   const playerSnapshotRef =
@@ -104,6 +114,18 @@ export default function LiveHostRoom({
     setWorking,
   ] =
     useState(false);
+
+  const [
+    listenerSyncEnabled,
+    setListenerSyncEnabled,
+  ] =
+    useState(false);
+
+  const [
+    syncMessage,
+    setSyncMessage,
+  ] =
+    useState("");
 
   const [
     error,
@@ -379,6 +401,133 @@ export default function LiveHostRoom({
     room,
   ]);
 
+  const syncListenerPlayback =
+    useCallback(() => {
+      if (
+        !room ||
+        room.isHost ||
+        !room.isJoined ||
+        room.status !== "LIVE" ||
+        !room.currentTrack
+      ) {
+        return;
+      }
+
+      const localTrack =
+        tracks.find(
+          (track) =>
+            track.id ===
+            room.currentTrack?.id,
+        );
+
+      if (!localTrack) {
+        setSyncMessage(
+          "Live track is unavailable on this device.",
+        );
+        return;
+      }
+
+      let positionSeconds =
+        room.playbackPositionMs /
+        1000;
+
+      if (
+        room.playbackIsPlaying &&
+        room.playbackUpdatedAt
+      ) {
+        const elapsedSeconds =
+          Math.max(
+            0,
+            (
+              Date.now() -
+              new Date(
+                room.playbackUpdatedAt,
+              ).getTime()
+            ) / 1000,
+          );
+
+        positionSeconds +=
+          elapsedSeconds;
+      }
+
+      positionSeconds =
+        Math.min(
+          Math.max(
+            0,
+            positionSeconds,
+          ),
+          localTrack.duration,
+        );
+
+      playTrack(
+        localTrack,
+      );
+
+      window.setTimeout(
+        () => {
+          setProgress(
+            positionSeconds,
+          );
+
+          if (
+            !room.playbackIsPlaying
+          ) {
+            togglePlay();
+          }
+        },
+        250,
+      );
+
+      setSyncMessage(
+        room.playbackIsPlaying
+          ? "Synced with Live playback."
+          : "Synced with paused Live playback.",
+      );
+    }, [
+      room,
+      playTrack,
+      setProgress,
+      togglePlay,
+    ]);
+
+  useEffect(() => {
+    if (
+      !listenerSyncEnabled ||
+      !room ||
+      room.isHost ||
+      !room.isJoined ||
+      room.status !== "LIVE"
+    ) {
+      return;
+    }
+
+    const timeoutId =
+      window.setTimeout(
+        () => {
+          syncListenerPlayback();
+        },
+        0,
+      );
+
+    return () => {
+      window.clearTimeout(
+        timeoutId,
+      );
+    };
+  }, [
+    listenerSyncEnabled,
+    room,
+    syncListenerPlayback,
+  ]);
+
+  function enableListenerSync() {
+    setListenerSyncEnabled(
+      true,
+    );
+
+    syncListenerPlayback();
+  }
+
   async function setLiveTrack(
     trackId: string,
   ) {
@@ -477,6 +626,16 @@ export default function LiveHostRoom({
           payload.error ||
             `Unable to ${action} room`,
         );
+      }
+
+      if (
+        action === "leave"
+      ) {
+        setListenerSyncEnabled(
+          false,
+        );
+
+        setSyncMessage("");
       }
 
       await loadRoom();
@@ -642,6 +801,31 @@ export default function LiveHostRoom({
                     ? "Leave Room"
                     : "Join Room"}
               </button>
+
+              {room.isJoined && (
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={
+                      enableListenerSync
+                    }
+                    className="w-full rounded-2xl border border-violet-500/20 bg-violet-500/10 py-4 text-sm font-black text-violet-300"
+                  >
+                    {listenerSyncEnabled
+                      ? "Re-sync with Live"
+                      : "Sync with Live"}
+                  </button>
+
+                  {syncMessage && (
+                    <p
+                      aria-live="polite"
+                      className="mt-2 text-xs text-white/35"
+                    >
+                      {syncMessage}
+                    </p>
+                  )}
+                </div>
+              )}
             </>
           ) : (
             <p className="mt-3 text-sm text-white/35">
@@ -831,12 +1015,33 @@ export default function LiveHostRoom({
         </h2>
 
         {room.currentTrack && (
-          <p className="mt-1 text-sm text-white/35">
-            {
-              room.currentTrack
-                .artist.name
-            }
-          </p>
+          <>
+            <p className="mt-1 text-sm text-white/35">
+              {
+                room.currentTrack
+                  .artist.name
+              }
+            </p>
+
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className={`rounded-full px-3 py-2 text-[10px] font-black ${
+                room.playbackIsPlaying
+                  ? "bg-emerald-500/10 text-emerald-400"
+                  : "bg-amber-500/10 text-amber-300"
+              }`}>
+                {room.playbackIsPlaying
+                  ? "PLAYING"
+                  : "PAUSED"}
+              </span>
+
+              <span className="rounded-full bg-white/5 px-3 py-2 font-mono text-[10px] text-white/40">
+                {Math.round(
+                  room.playbackPositionMs /
+                  1000,
+                )}s
+              </span>
+            </div>
+          </>
         )}
 
       </section>

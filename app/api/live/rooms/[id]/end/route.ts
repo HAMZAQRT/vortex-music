@@ -78,26 +78,57 @@ export async function POST(
     );
   }
 
+  const endedAt =
+    new Date();
+
   const updated =
-    await prisma.liveRoom.update({
-      where: {
-        id,
-      },
+    await prisma.$transaction(
+      async (tx) => {
+        const endedRoom =
+          await tx.liveRoom.update({
+            where: {
+              id,
+            },
 
-      data: {
-        status: "ENDED",
-        endedAt:
-          new Date(),
-      },
+            data: {
+              status: "ENDED",
+              endedAt,
+              playbackIsPlaying:
+                false,
+              playbackUpdatedAt:
+                endedAt,
+            },
 
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        startedAt: true,
-        endedAt: true,
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              startedAt: true,
+              endedAt: true,
+              playbackIsPlaying:
+                true,
+              playbackPositionMs:
+                true,
+              playbackUpdatedAt:
+                true,
+            },
+          });
+
+        await tx.liveParticipant.updateMany({
+          where: {
+            roomId: id,
+            leftAt: null,
+          },
+
+          data: {
+            leftAt:
+              endedAt,
+          },
+        });
+
+        return endedRoom;
       },
-    });
+    );
 
   return NextResponse.json({
     room: updated,

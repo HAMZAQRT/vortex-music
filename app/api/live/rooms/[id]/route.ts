@@ -53,6 +53,10 @@ export async function GET(
         endedAt: true,
         hostId: true,
 
+        playbackIsPlaying: true,
+        playbackPositionMs: true,
+        playbackUpdatedAt: true,
+
         host: {
           select: {
             id: true,
@@ -78,7 +82,11 @@ export async function GET(
 
         _count: {
           select: {
-            participants: true,
+            participants: {
+              where: {
+                leftAt: null,
+              },
+            },
           },
         },
       },
