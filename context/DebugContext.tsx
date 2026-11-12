@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -59,11 +60,11 @@ export function DebugProvider({
   const [events, setEvents] = useState<DebugEvent[]>([]);
   const [enabled, setEnabled] = useState(true);
 
-  function log(
+  const log = useCallback((
     type: DebugEventType,
     message: string,
     data?: unknown,
-  ) {
+  ) => {
     if (!enabled) {
       return;
     }
@@ -81,7 +82,7 @@ export function DebugProvider({
     setEvents((current) =>
       [event, ...current].slice(0, 100),
     );
-  }
+  }, [enabled]);
 
   function clearEvents() {
     setEvents([]);
@@ -135,7 +136,7 @@ export function DebugProvider({
         handleRejection,
       );
     };
-  });
+  }, [log]);
 
   return (
     <DebugContext.Provider

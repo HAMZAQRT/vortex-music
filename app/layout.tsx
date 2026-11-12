@@ -19,9 +19,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vortex Music",
+  title: {
+    default: "Vortex Music",
+    template: "%s · Vortex Music",
+  },
+
   description:
-    "Vortex Music - music, discovery and live audio experiences.",
+    "Music, discovery, playlists and live listening experiences inside Vortex.",
+
+  applicationName:
+    "Vortex Music",
+
+  icons: {
+    icon:
+      "/vortex-avatar.svg",
+  },
 };
 
 export default function RootLayout({

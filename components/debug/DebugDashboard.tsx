@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { usePlayer } from "../../context/PlayerContext";
 import { useLibrary } from "../../context/LibraryContext";
 import { useDebug } from "../../context/DebugContext";
+import MediaInspector from "./MediaInspector";
 
 type BrowserInfo = {
   online: boolean;
@@ -382,6 +383,8 @@ export default function DebugDashboard() {
           </p>
         </div>
       </DebugSection>
+
+      <MediaInspector />
 
       <section className="mt-4 rounded-3xl border border-white/5 bg-[#111116] p-4">
         <div className="flex items-center justify-between">
