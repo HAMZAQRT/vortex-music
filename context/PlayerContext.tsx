@@ -54,6 +54,7 @@ export function PlayerProvider({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgressState] = useState(0);
+  const [mediaDuration, setMediaDuration] = useState(0);
   const [volume, setVolumeState] = useState(80);
   const [shuffle, setShuffle] = useState(false);
   const [repeat, setRepeat] = useState<RepeatMode>("off");
@@ -72,17 +73,25 @@ export function PlayerProvider({
   }, [addToHistory]);
 
   useEffect(() => {
-    currentTrackIdRef.current =
-      currentTrack.id;
-  }, [currentTrack.id]);
-
-  useEffect(() => {
     const audio = new Audio();
     audio.preload = "metadata";
     audioRef.current = audio;
 
     const handleTimeUpdate = () => {
-      setProgressState(audio.currentTime || 0);
+      setProgressState(
+        audio.currentTime || 0,
+      );
+    };
+
+    const updateDuration = () => {
+      const duration =
+        audio.duration;
+
+      setMediaDuration(
+        Number.isFinite(duration)
+          ? duration
+          : 0,
+      );
     };
 
     const handleEnded = () => {
@@ -105,6 +114,8 @@ export function PlayerProvider({
     };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("loadedmetadata", updateDuration);
+    audio.addEventListener("durationchange", updateDuration);
     audio.addEventListener("ended", handleEnded);
     audio.addEventListener("play", handlePlay);
     audio.addEventListener("pause", handlePause);
@@ -112,6 +123,8 @@ export function PlayerProvider({
     return () => {
       audio.pause();
       audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("loadedmetadata", updateDuration);
+      audio.removeEventListener("durationchange", updateDuration);
       audio.removeEventListener("ended", handleEnded);
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
@@ -126,9 +139,11 @@ export function PlayerProvider({
 
     const shouldResume = !audio.paused;
 
+    setProgressState(0);
+    setMediaDuration(0);
+
     audio.src = currentTrack.audioSrc;
     audio.load();
-    setProgressState(0);
 
     if (shouldResume) {
       audio.play().catch(() => {
@@ -256,9 +271,19 @@ export function PlayerProvider({
   }
 
   function setProgress(value: number) {
+    const duration =
+      mediaDuration > 0
+        ? mediaDuration
+        : currentTrack.duration;
+
     const safeValue = Math.max(
       0,
-      Math.min(value, currentTrack.duration),
+      duration > 0
+        ? Math.min(
+            value,
+            duration,
+          )
+        : value,
     );
 
     setProgressState(safeValue);
@@ -299,7 +324,16 @@ export function PlayerProvider({
 
   const value: PlayerContextValue = {
     queue: tracks,
-    currentTrack,
+
+    currentTrack: {
+      ...currentTrack,
+
+      duration:
+        mediaDuration > 0
+          ? mediaDuration
+          : currentTrack.duration,
+    },
+
     currentIndex,
     isPlaying,
     progress,
