@@ -9,6 +9,7 @@ import {
 } from "../../auth";
 
 import GitHubSignIn from "../../components/auth/GitHubSignIn";
+import CredentialsSignIn from "../../components/auth/CredentialsSignIn";
 
 export const instant = false;
 
@@ -60,6 +61,20 @@ export default async function LoginPage() {
 
         <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-2xl backdrop-blur-xl">
 
+          <CredentialsSignIn />
+
+          <div className="my-5 flex items-center gap-3">
+
+            <div className="h-px flex-1 bg-white/5" />
+
+            <span className="text-[10px] font-bold uppercase tracking-wider text-white/20">
+              Or continue with
+            </span>
+
+            <div className="h-px flex-1 bg-white/5" />
+
+          </div>
+
           <GitHubSignIn />
 
           <div className="my-5 flex items-center gap-3">
@@ -87,8 +102,8 @@ export default async function LoginPage() {
             />
 
             <IdentityFeature
-              value="OAUTH"
-              label="Provider"
+              value="2"
+              label="Providers"
             />
 
           </div>
