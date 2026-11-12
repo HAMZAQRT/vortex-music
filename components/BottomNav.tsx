@@ -7,7 +7,7 @@ const items = [
     label: "Home",
   },
   {
-    href: "/search",
+    href: "/explore",
     icon: "⌕",
     label: "Explore",
   },
