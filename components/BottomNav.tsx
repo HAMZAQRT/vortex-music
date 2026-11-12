@@ -1,5 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 const items = [
   {
     href: "/",
@@ -24,49 +27,64 @@ const items = [
 ] as const;
 
 export default function BottomNav() {
-  function navigate(
-    href: string,
-  ) {
-    window.location.assign(
-      href,
-    );
-  }
+  const pathname =
+    usePathname();
 
   return (
     <nav
       aria-label="Main navigation"
-      className="fixed inset-x-0 bottom-0 z-[9999] bg-[#09090c] pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2"
+      className="fixed inset-x-0 bottom-0 z-[9999] border-t border-white/5 bg-[#09090c]/95 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl"
     >
       <div className="mx-auto grid max-w-xl grid-cols-4">
-
         {items.map(
-          (item) => (
-            <button
-              key={
-                item.href
-              }
-              type="button"
-              onClick={() =>
-                navigate(
-                  item.href,
-                )
-              }
-              className="flex min-h-[72px] touch-manipulation flex-col items-center justify-center gap-1 text-white/55 active:bg-white/10 active:text-white"
-              aria-label={
-                item.label
-              }
-            >
-              <span className="text-2xl leading-none">
-                {item.icon}
-              </span>
+          (item) => {
+            const active =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname ===
+                    item.href ||
+                  pathname.startsWith(
+                    `${item.href}/`,
+                  );
 
-              <span className="text-xs font-bold">
-                {item.label}
-              </span>
-            </button>
-          ),
+            return (
+              <Link
+                key={
+                  item.href
+                }
+                href={
+                  item.href
+                }
+                className={`relative flex min-h-[72px] touch-manipulation flex-col items-center justify-center gap-1 rounded-2xl ${
+                  active
+                    ? "text-white"
+                    : "text-white/45"
+                }`}
+                aria-current={
+                  active
+                    ? "page"
+                    : undefined
+                }
+              >
+                {active && (
+                  <span className="absolute top-0 h-1 w-8 rounded-full bg-violet-500" />
+                )}
+
+                <span className="text-2xl leading-none">
+                  {
+                    item.icon
+                  }
+                </span>
+
+                <span className="text-xs font-bold">
+                  {
+                    item.label
+                  }
+                </span>
+              </Link>
+            );
+          },
         )}
-
       </div>
     </nav>
   );

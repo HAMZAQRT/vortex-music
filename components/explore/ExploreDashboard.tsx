@@ -416,19 +416,26 @@ export default function ExploreDashboard() {
         </section>
       )}
 
-      <section className="mt-10 rounded-[2rem] border border-white/5 bg-gradient-to-br from-fuchsia-500/10 to-cyan-500/5 p-6">
+      <Link
+        href="/videos"
+        className="mt-10 block rounded-[2rem] border border-white/5 bg-gradient-to-br from-fuchsia-500/10 to-cyan-500/5 p-6"
+      >
         <p className="text-xs font-black uppercase tracking-widest text-fuchsia-400">
           Vortex Video
         </p>
 
         <h2 className="mt-2 text-2xl font-black">
-          Visual sessions are next
+          Visual sessions
         </h2>
 
         <p className="mt-2 max-w-lg text-sm leading-6 text-white/40">
-          The video catalog is ready for licensed visual content. Vortex will not publish placeholder or unlicensed media.
+          Music videos, visualizers and sessions in one dedicated experience.
         </p>
-      </section>
+
+        <p className="mt-5 text-xs font-black text-fuchsia-300">
+          Open Vortex Video →
+        </p>
+      </Link>
     </>
   );
 }

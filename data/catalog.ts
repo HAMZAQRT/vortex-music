@@ -27,62 +27,72 @@ export type Playlist = {
 export const artists: Artist[] = [
   {
     id: "vortex-originals",
-    name: "Vortex Originals",
-    followers: "124K",
+    name: "FreePD Collection",
+    followers: "Public Domain",
     verified: true,
     color: "from-violet-500 to-indigo-950",
-    bio: "Original sounds created for the Vortex universe.",
+    bio: "Public-domain and CC0 audio selected for the Vortex music experience.",
   },
   {
     id: "luna",
-    name: "Luna",
-    followers: "89K",
+    name: "FreePD Sessions",
+    followers: "CC0 Audio",
     verified: true,
     color: "from-fuchsia-500 to-purple-950",
-    bio: "Electronic pop, neon nights and atmospheric sound.",
+    bio: "A Vortex collection built from reusable FreePD audio sources.",
   },
   {
     id: "nova",
-    name: "Nova",
-    followers: "67K",
+    name: "Vortex Open Audio",
+    followers: "Licensed Media",
     verified: true,
     color: "from-cyan-500 to-blue-950",
-    bio: "Future-facing electronic music and late-night energy.",
+    bio: "Open audio used to test and showcase the Vortex playback experience.",
   },
 ];
 
 export const albums: Album[] = [
   {
     id: "night-signals",
-    title: "Night Signals",
+    title: "FreePD Vol. 1",
     artistId: "vortex-originals",
-    year: "2026",
+    year: "Vortex",
     color: "from-violet-500 to-indigo-950",
-    trackIds: ["midnight-echo"],
+    trackIds: [
+      "midnight-echo",
+      "neon-dreams",
+    ],
   },
   {
     id: "electric-hearts",
-    title: "Electric Hearts",
+    title: "FreePD Vol. 2",
     artistId: "luna",
-    year: "2026",
+    year: "Vortex",
     color: "from-fuchsia-500 to-purple-950",
-    trackIds: ["neon-dreams"],
+    trackIds: [
+      "after-dark",
+      "gravity",
+    ],
   },
   {
     id: "horizons",
-    title: "Horizons",
+    title: "Open Audio Collection",
     artistId: "nova",
-    year: "2026",
+    year: "Vortex",
     color: "from-cyan-500 to-blue-950",
-    trackIds: ["after-dark"],
+    trackIds: [
+      "midnight-echo",
+      "after-dark",
+      "gravity",
+    ],
   },
 ];
 
 export const playlists: Playlist[] = [
   {
     id: "daily-mix-01",
-    title: "Daily Mix 01",
-    description: "A personal mix of sounds from across Vortex.",
+    title: "Vortex Mix",
+    description: "The complete licensed Vortex audio collection.",
     color: "from-violet-500 to-blue-950",
     trackIds: [
       "midnight-echo",
@@ -93,8 +103,8 @@ export const playlists: Playlist[] = [
   },
   {
     id: "night-drive",
-    title: "Night Drive",
-    description: "Electronic sounds for the road after dark.",
+    title: "Open Night",
+    description: "A public-domain mix built for the Vortex player.",
     color: "from-cyan-500 to-indigo-950",
     trackIds: [
       "after-dark",

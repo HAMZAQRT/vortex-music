@@ -204,6 +204,39 @@ export default function PlayerPage() {
           </div>
         </section>
 
+        <section className="mt-8 grid grid-cols-2 gap-3">
+          <div className="rounded-3xl border border-white/5 bg-white/[0.025] p-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+              Media
+            </p>
+
+            <p className="mt-2 text-sm font-bold">
+              FreePD
+            </p>
+
+            <p className="mt-1 text-xs text-white/30">
+              Public-domain / CC0 source documented with Vortex.
+            </p>
+          </div>
+
+          <Link
+            href="/videos"
+            className="rounded-3xl border border-fuchsia-500/10 bg-fuchsia-500/5 p-4"
+          >
+            <p className="text-[10px] font-black uppercase tracking-widest text-fuchsia-400">
+              Video
+            </p>
+
+            <p className="mt-2 text-sm font-bold">
+              Visual Sessions
+            </p>
+
+            <p className="mt-1 text-xs text-white/30">
+              Open Vortex Video →
+            </p>
+          </Link>
+        </section>
+
         <section className="mt-12">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black">
