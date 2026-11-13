@@ -47,7 +47,8 @@ export default function RegisterForm() {
     useState("");
 
   async function submit(
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
 
@@ -64,10 +65,12 @@ export default function RegisterForm() {
           "/api/account/register",
           {
             method: "POST",
+
             headers: {
               "Content-Type":
                 "application/json",
             },
+
             body: JSON.stringify({
               name,
               username,
@@ -97,9 +100,12 @@ export default function RegisterForm() {
           "credentials",
           {
             email:
-              email.trim().toLowerCase(),
+              email
+                .trim()
+                .toLowerCase(),
             password,
-            redirect: false,
+            redirect:
+              false,
           },
         );
 
@@ -107,15 +113,14 @@ export default function RegisterForm() {
         !result ||
         result.error
       ) {
-        router.push(
+        router.replace(
           "/login",
         );
         return;
       }
 
-      router.push(
-        "/account",
-      );
+      router.replace("/");
+      router.refresh();
     } catch {
       setError(
         "Account creation failed.",
@@ -132,7 +137,9 @@ export default function RegisterForm() {
     >
       <input
         value={name}
-        onChange={(event) =>
+        onChange={(
+          event,
+        ) =>
           setName(
             event.target.value,
           )
@@ -142,12 +149,14 @@ export default function RegisterForm() {
         placeholder="Display name"
         autoComplete="name"
         required
-        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm outline-none placeholder:text-white/20"
+        className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-4 outline-none placeholder:text-white/20"
       />
 
       <input
         value={username}
-        onChange={(event) =>
+        onChange={(
+          event,
+        ) =>
           setUsername(
             event.target.value
               .toLowerCase()
@@ -155,7 +164,10 @@ export default function RegisterForm() {
                 /[^a-z0-9_]/g,
                 "",
               )
-              .slice(0, 24),
+              .slice(
+                0,
+                24,
+              ),
           )
         }
         minLength={3}
@@ -163,13 +175,15 @@ export default function RegisterForm() {
         placeholder="username"
         autoComplete="username"
         required
-        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm outline-none placeholder:text-white/20"
+        className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-4 outline-none placeholder:text-white/20"
       />
 
       <input
         type="email"
         value={email}
-        onChange={(event) =>
+        onChange={(
+          event,
+        ) =>
           setEmail(
             event.target.value,
           )
@@ -177,22 +191,24 @@ export default function RegisterForm() {
         placeholder="Email"
         autoComplete="email"
         required
-        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm outline-none placeholder:text-white/20"
+        className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-4 outline-none placeholder:text-white/20"
       />
 
       <input
         type="password"
         value={password}
-        onChange={(event) =>
+        onChange={(
+          event,
+        ) =>
           setPassword(
             event.target.value,
           )
         }
         minLength={10}
-        placeholder="Password · minimum 10 characters"
+        placeholder="Password · 10+ characters"
         autoComplete="new-password"
         required
-        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm outline-none placeholder:text-white/20"
+        className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-4 outline-none placeholder:text-white/20"
       />
 
       {error && (
@@ -210,15 +226,15 @@ export default function RegisterForm() {
         className="w-full rounded-2xl bg-white py-4 text-sm font-black text-black disabled:opacity-40"
       >
         {loading
-          ? "Creating account..."
-          : "Create account"}
+          ? "Creating Vortex..."
+          : "Create Vortex account"}
       </button>
 
       <p className="pt-2 text-center text-xs text-white/30">
         Already registered?{" "}
         <Link
           href="/login"
-          className="font-bold text-violet-300"
+          className="font-black text-violet-300"
         >
           Sign in
         </Link>

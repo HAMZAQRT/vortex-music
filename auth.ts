@@ -23,19 +23,22 @@ export const {
 
   providers: [
     GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
+      clientId:
+        process.env.AUTH_GITHUB_ID,
+      clientSecret:
+        process.env.AUTH_GITHUB_SECRET,
     }),
 
     Credentials({
       id: "credentials",
-      name: "Email and Password",
+      name: "Vortex Account",
 
       credentials: {
         email: {
           label: "Email",
           type: "email",
         },
+
         password: {
           label: "Password",
           type: "password",
@@ -56,7 +59,10 @@ export const {
         if (
           !email ||
           !password ||
-          Buffer.byteLength(password, "utf8") > 72
+          Buffer.byteLength(
+            password,
+            "utf8",
+          ) > 72
         ) {
           return null;
         }
@@ -66,6 +72,7 @@ export const {
             where: {
               email,
             },
+
             select: {
               id: true,
               name: true,
@@ -73,7 +80,6 @@ export const {
               email: true,
               image: true,
               passwordHash: true,
-              role: true,
             },
           });
 
@@ -93,10 +99,12 @@ export const {
 
         return {
           id: user.id,
+
           name:
             user.name ??
             user.username ??
             "Vortex User",
+
           email: user.email,
           image: user.image,
         };
@@ -132,6 +140,7 @@ export const {
             where: {
               id: userId,
             },
+
             select: {
               role: true,
             },

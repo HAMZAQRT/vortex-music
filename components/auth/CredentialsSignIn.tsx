@@ -19,20 +19,33 @@ export default function CredentialsSignIn() {
   const router =
     useRouter();
 
-  const [email, setEmail] =
+  const [
+    email,
+    setEmail,
+  ] =
     useState("");
 
-  const [password, setPassword] =
+  const [
+    password,
+    setPassword,
+  ] =
     useState("");
 
-  const [loading, setLoading] =
+  const [
+    loading,
+    setLoading,
+  ] =
     useState(false);
 
-  const [error, setError] =
+  const [
+    error,
+    setError,
+  ] =
     useState("");
 
   async function submit(
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
 
@@ -49,9 +62,12 @@ export default function CredentialsSignIn() {
           "credentials",
           {
             email:
-              email.trim().toLowerCase(),
+              email
+                .trim()
+                .toLowerCase(),
             password,
-            redirect: false,
+            redirect:
+              false,
           },
         );
 
@@ -67,12 +83,11 @@ export default function CredentialsSignIn() {
         return;
       }
 
-      router.push(
-        "/account",
-      );
+      router.replace("/");
+      router.refresh();
     } catch {
       setError(
-        "Sign in failed. Try again.",
+        "Sign in failed. Please try again.",
       );
 
       setLoading(false);
@@ -88,28 +103,32 @@ export default function CredentialsSignIn() {
         type="email"
         autoComplete="email"
         value={email}
-        onChange={(event) =>
+        onChange={(
+          event,
+        ) =>
           setEmail(
             event.target.value,
           )
         }
         placeholder="Email"
         required
-        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm outline-none placeholder:text-white/20 focus:border-violet-500/50"
+        className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-4 outline-none placeholder:text-white/20 focus:border-violet-500/60"
       />
 
       <input
         type="password"
         autoComplete="current-password"
         value={password}
-        onChange={(event) =>
+        onChange={(
+          event,
+        ) =>
           setPassword(
             event.target.value,
           )
         }
         placeholder="Password"
         required
-        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-sm outline-none placeholder:text-white/20 focus:border-violet-500/50"
+        className="w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-4 outline-none placeholder:text-white/20 focus:border-violet-500/60"
       />
 
       {error && (
@@ -131,16 +150,16 @@ export default function CredentialsSignIn() {
           : "Sign in"}
       </button>
 
-      <div className="flex justify-between gap-3 pt-1 text-xs">
+      <div className="flex items-center justify-between gap-4 pt-2 text-xs">
         <Link
           href="/register"
-          className="font-bold text-violet-300"
+          className="font-black text-violet-300"
         >
           Create account
         </Link>
 
         <span className="text-white/25">
-          Forgot password · soon
+          Password recovery next
         </span>
       </div>
     </form>

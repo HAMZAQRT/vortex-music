@@ -8,6 +8,9 @@ import {
   prisma,
 } from "../../../../lib/db/prisma";
 
+const usernamePattern =
+  /^[a-z0-9_]{3,24}$/;
+
 export async function POST(
   request: Request,
 ) {
@@ -19,7 +22,8 @@ export async function POST(
   } catch {
     return NextResponse.json(
       {
-        error: "Invalid JSON",
+        error:
+          "Invalid JSON",
       },
       {
         status: 400,
@@ -33,7 +37,8 @@ export async function POST(
   ) {
     return NextResponse.json(
       {
-        error: "Invalid request",
+        error:
+          "Invalid request",
       },
       {
         status: 400,
@@ -59,13 +64,19 @@ export async function POST(
       : "";
 
   const cleanUsername =
-    typeof username === "string"
-      ? username.trim().toLowerCase()
+    typeof username ===
+    "string"
+      ? username
+          .trim()
+          .toLowerCase()
       : "";
 
   const cleanEmail =
-    typeof email === "string"
-      ? email.trim().toLowerCase()
+    typeof email ===
+    "string"
+      ? email
+          .trim()
+          .toLowerCase()
       : "";
 
   if (
@@ -75,7 +86,7 @@ export async function POST(
     return NextResponse.json(
       {
         error:
-          "Name must be between 2 and 60 characters",
+          "Name must contain 2-60 characters",
       },
       {
         status: 400,
@@ -84,7 +95,7 @@ export async function POST(
   }
 
   if (
-    !/^[a-z0-9_]{3,24}$/.test(
+    !usernamePattern.test(
       cleanUsername,
     )
   ) {
@@ -102,7 +113,9 @@ export async function POST(
   if (
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
       cleanEmail,
-    )
+    ) ||
+    cleanEmail.length >
+      254
   ) {
     return NextResponse.json(
       {
@@ -116,7 +129,8 @@ export async function POST(
   }
 
   if (
-    typeof password !== "string" ||
+    typeof password !==
+      "string" ||
     password.length < 10 ||
     Buffer.byteLength(
       password,
@@ -126,7 +140,7 @@ export async function POST(
     return NextResponse.json(
       {
         error:
-          "Password must be at least 10 characters and no more than 72 bytes",
+          "Password must contain at least 10 characters and no more than 72 bytes",
       },
       {
         status: 400,
@@ -139,7 +153,8 @@ export async function POST(
       where: {
         OR: [
           {
-            email: cleanEmail,
+            email:
+              cleanEmail,
           },
           {
             username:
@@ -147,6 +162,7 @@ export async function POST(
           },
         ],
       },
+
       select: {
         email: true,
         username: true,
@@ -157,9 +173,10 @@ export async function POST(
     return NextResponse.json(
       {
         error:
-          existing.email === cleanEmail
-            ? "An account already uses this email"
-            : "Username is already taken",
+          existing.email ===
+          cleanEmail
+            ? "This email already has a Vortex account"
+            : "This username is already taken",
       },
       {
         status: 409,
@@ -176,13 +193,17 @@ export async function POST(
   const user =
     await prisma.user.create({
       data: {
-        name: cleanName,
+        name:
+          cleanName,
         username:
           cleanUsername,
-        email: cleanEmail,
+        email:
+          cleanEmail,
         passwordHash,
-        role: "USER",
+        role:
+          "USER",
       },
+
       select: {
         id: true,
         name: true,

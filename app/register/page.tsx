@@ -3,6 +3,7 @@ import {
 } from "next/server";
 
 import Link from "next/link";
+
 import {
   redirect,
 } from "next/navigation";
@@ -22,13 +23,12 @@ export default async function RegisterPage() {
     await auth();
 
   if (session?.user) {
-    redirect(
-      "/account",
-    );
+    redirect("/");
   }
 
   return (
     <main className="min-h-screen bg-[#070709] px-5 py-10 text-white">
+
       <div className="mx-auto flex min-h-[85vh] max-w-md flex-col justify-center">
 
         <Link
@@ -43,11 +43,11 @@ export default async function RegisterPage() {
         </p>
 
         <h1 className="mt-3 text-4xl font-black">
-          Create your Vortex
+          Create your identity.
         </h1>
 
         <p className="mt-3 text-sm leading-6 text-white/40">
-          One identity for your library, playlists and Live experience.
+          Your music, playlists, profile and Live presence start here.
         </p>
 
         <div className="mt-8 rounded-[2rem] border border-white/10 bg-white/[0.04] p-5">
