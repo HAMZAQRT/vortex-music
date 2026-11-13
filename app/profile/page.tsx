@@ -165,7 +165,18 @@ export default async function ProfilePage() {
           />
         </div>
 
-        <div className="mt-6">
+        {user.username && (
+          <div className="mt-6">
+            <Link
+              href={`/profile/${user.username}`}
+              className="inline-flex rounded-full border border-violet-500/20 bg-violet-500/10 px-5 py-3 text-xs font-black text-violet-300"
+            >
+              View Public Profile
+            </Link>
+          </div>
+        )}
+
+        <div className="mt-3">
           <ProfileEditor
             initial={{
               name:
