@@ -42,6 +42,7 @@ model User {
   hostedLiveRooms LiveRoom[] @relation("LiveRoomHost")
   liveParticipations LiveParticipant[]
   passwordResetTokens PasswordResetToken[]
+  mobileSessions MobileSession[]
 }
 
 model Account {
@@ -290,4 +291,19 @@ model UserFollow {
   @@id([followerId, followingId])
   @@index([followingId, createdAt])
   @@index([followerId, createdAt])
+}
+
+
+model MobileSession {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  lastUsedAt DateTime @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
