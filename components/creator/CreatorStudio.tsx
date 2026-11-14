@@ -5,7 +5,6 @@ import {
   useState,
 } from "react";
 
-import MediaUploader from "./MediaUploader";
 
 export default function CreatorStudio({
   role,
@@ -116,9 +115,6 @@ export default function CreatorStudio({
         </div>
       )}
 
-      {configured && (
-        <MediaUploader />
-      )}
 
     </>
   );
