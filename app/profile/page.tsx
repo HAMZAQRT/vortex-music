@@ -18,6 +18,7 @@ import {
 } from "../../lib/db/prisma";
 
 import ProfileEditor from "../../components/auth/ProfileEditor";
+import AvatarUpload from "../../components/auth/AvatarUpload";
 
 export const instant = false;
 
@@ -113,6 +114,12 @@ export default async function ProfilePage() {
           )}
 
         </div>
+
+        <AvatarUpload
+          name={user.name ?? "Vortex User"}
+          username={user.username ?? ""}
+          bio={user.bio ?? ""}
+        />
 
         <h1 className="mt-5 text-3xl font-black">
           {user.name ??
