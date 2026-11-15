@@ -125,20 +125,69 @@ export async function POST(
     );
   }
 
-  if (
-    !audioUrl.startsWith(
-      "https://",
-    )
-  ) {
+  let parsedAudioUrl:
+    URL;
+
+  try {
+    parsedAudioUrl =
+      new URL(
+        audioUrl,
+      );
+  } catch {
     return NextResponse.json(
       {
         error:
-          "Audio URL must use HTTPS",
+          "Invalid audio URL",
       },
       {
         status: 400,
       },
     );
+  }
+
+  if (
+    parsedAudioUrl.protocol !==
+      "https:" ||
+    parsedAudioUrl.hostname !==
+      "res.cloudinary.com"
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Audio must come from Vortex media storage",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  if (cover) {
+    try {
+      const parsedCover =
+        new URL(
+          cover,
+        );
+
+      if (
+        parsedCover.protocol !==
+          "https:" ||
+        parsedCover.hostname !==
+          "res.cloudinary.com"
+      ) {
+        throw new Error();
+      }
+    } catch {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid cover URL",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
   }
 
   const artist =

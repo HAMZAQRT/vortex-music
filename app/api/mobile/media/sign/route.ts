@@ -18,6 +18,13 @@ const uploadRoles =
     "ADMIN",
   ]);
 
+const folders = {
+  cover:
+    "vortex/covers",
+  audio:
+    "vortex/audio",
+} as const;
+
 export async function POST(
   request: Request,
 ) {
@@ -72,17 +79,22 @@ export async function POST(
 
   const body =
     (await request.json()) as {
-      paramsToSign?: Record<
-        string,
-        string | number
-      >;
+      kind?: unknown;
     };
 
-  if (!body.paramsToSign) {
+  const kind =
+    body.kind ===
+      "audio" ||
+    body.kind ===
+      "cover"
+      ? body.kind
+      : null;
+
+  if (!kind) {
     return NextResponse.json(
       {
         error:
-          "Missing upload parameters",
+          "Invalid media kind",
       },
       {
         status: 400,
@@ -90,15 +102,31 @@ export async function POST(
     );
   }
 
+  const timestamp =
+    Math.floor(
+      Date.now() /
+      1000,
+    );
+
+  const folder =
+    folders[kind];
+
+  const paramsToSign = {
+    timestamp,
+    folder,
+  };
+
   const signature =
     cloudinary.utils
       .api_sign_request(
-        body.paramsToSign,
+        paramsToSign,
         secret,
       );
 
   return NextResponse.json({
     signature,
+    timestamp,
+    folder,
     apiKey,
     cloudName,
   });
