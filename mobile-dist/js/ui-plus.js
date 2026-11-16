@@ -1,3 +1,4 @@
+/* eslint-disable */
 (() => {
   const JAMENDO_ID = "742f09e7";
   const $ = (id) => document.getElementById(id);

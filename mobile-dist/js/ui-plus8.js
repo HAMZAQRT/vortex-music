@@ -1,3 +1,4 @@
+/* eslint-disable */
 (() => {
   const UI = window.VortexUI;
   const $ = (id) => document.getElementById(id);

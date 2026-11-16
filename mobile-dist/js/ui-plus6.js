@@ -1,3 +1,4 @@
+/* eslint-disable */
 (() => {
   const $ = (id) => document.getElementById(id);
   const fp = document.querySelector(".fp");

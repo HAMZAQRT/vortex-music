@@ -65,3 +65,17 @@
 .sw button{width:38px;height:38px;border-radius:50%;border:2px solid transparent}
 .sw button.on{border-color:#fff}
 .playall{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:8px 14px;font-size:12px;font-weight:900}
+.hero{background-size:200% 200%;animation:heroMove 12s ease infinite}
+@keyframes heroMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.mini{background:rgba(20,20,28,.72)!important;backdrop-filter:blur(26px) saturate(1.4);border-color:rgba(255,255,255,.12)!important}
+.nav{background:rgba(7,7,9,.78)!important;backdrop-filter:blur(28px) saturate(1.4)}
+.section{animation:fadeUp .4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.badge{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.1);font-size:9px;font-weight:900;color:rgba(255,255,255,.6);vertical-align:middle}
+.src-tabs{display:flex;gap:8px;overflow-x:auto;margin:16px 0 4px;scrollbar-width:none}
+.src-tabs::-webkit-scrollbar{display:none}
+.sk{flex:0 0 140px;height:190px;border-radius:20px;background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.09),rgba(255,255,255,.04));background-size:200% 100%;animation:sk 1.2s linear infinite}
+@keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+.fp-cover{animation:float 6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.srcnote{margin:18px 0 8px;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);font-size:11px;line-height:1.6}
