@@ -2,7 +2,7 @@
   const UI = window.VortexUI;
   const $ = (id) => document.getElementById(id);
   if (!UI) return;
-  const H = "https://api.audius.co/v1"\;
+  const H = "https://api.audius.co/v1";
   const GR = ["#6929c4,#db2777","#0369a1,#7c3aed","#be123c,#7c3aed","#047857,#2563eb","#b45309,#be123c","#0f766e,#4338ca"];
   const conv = (a) => (a || []).filter((t) => t.id && t.is_streamable !== false).map((t) => ({
     id: "au" + t.id,
