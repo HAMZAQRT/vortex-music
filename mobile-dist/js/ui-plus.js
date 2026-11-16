@@ -137,7 +137,7 @@
     anchor.before(mk("hrowTop", "Most played", [...data].reverse()));
   }
 
-  const TAGS = [["all","All"],["pop","Pop"],["rock","Rock"],["electronic","Electronic"],["hiphop","Hip-Hop"],["jazz","Jazz"],["lounge","Lounge"],["classical","Classical"]];
+  const TAGS = [["all","All"],["pop","Pop"],["rock","Rock"],["electronic","Electronic"],["hiphop","Hip-Hop"],["jazz","Jazz"],["lounge","Lounge"],["classical","Classical"],["arabic","Arabic"],["world","World"],["acoustic","Acoustic"]];
   async function loadJamendo(tag) {
     const row = $("hrowJam");
     try {
