@@ -168,6 +168,7 @@
     loadJamendo("all");
   }
 
+  window.VortexUI = { playList: (a, i) => { jam = a; playJam(i); }, current: () => (mode === "jam" ? jam[ji] : null) };
   new MutationObserver(buildRows).observe($("trackList"), { childList: true });
   buildRows();
   buildJamendo();
