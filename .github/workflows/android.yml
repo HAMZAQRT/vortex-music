@@ -1,5 +1,4 @@
 name: Build Android APK
-
 on:
   workflow_dispatch:
   push:
@@ -9,37 +8,31 @@ on:
       - "mobile-dist/**"
       - "capacitor.config.ts"
       - ".github/workflows/android.yml"
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
-
-      - name: Install dependencies
-        run: npm ci --ignore-scripts
-
-      - name: Sync Capacitor
-        run: npx cap sync android
-
-      - name: Build debug APK
+      - run: npm ci --ignore-scripts
+      - run: npx cap sync android
+      - name: Use fixed debug key
+        run: |
+          mkdir -p ~/.android
+          cp android/debug.keystore ~/.android/debug.keystore
+      - name: Build
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: vortex-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk

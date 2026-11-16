@@ -2,6 +2,7 @@
 .fp.show{display:flex}
 .fp-top{display:flex;justify-content:space-between;align-items:center}
 .fp-top button{width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.08);font-size:20px}
+.fp-top button.on{color:#f472b6}
 .fp-cover{margin:26px auto 0;width:min(78vw,340px);aspect-ratio:1;border-radius:28px;background:linear-gradient(135deg,#7c3aed,#ec4899) center/cover;display:grid;place-items:center;font-size:90px;font-weight:1000;box-shadow:0 30px 80px rgba(124,58,237,.35)}
 .fp-title{margin-top:28px;font-size:24px;font-weight:1000}
 .fp-artist{margin-top:6px;color:rgba(255,255,255,.5);font-size:14px}
@@ -15,5 +16,11 @@
 .hrow::-webkit-scrollbar{display:none}
 .hcard{flex:0 0 140px;border:0;background:none;text-align:left}
 .hcard .hc{width:140px;height:140px;border-radius:20px;background:linear-gradient(135deg,#6929c4,#db2777) center/cover;display:grid;place-items:center;font-size:40px;font-weight:1000}
-.hcard b{display:block;margin-top:8px;font-size:13px}
+.hcard b{display:block;margin-top:8px;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hcard small{color:rgba(255,255,255,.45);font-size:11px}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#fff;border-radius:999px;padding:8px 14px;font-size:12px;font-weight:800}
+.chip.on{background:#fff;color:#000}
+.nav button{border-radius:16px;transition:background .2s}
+.nav button.active{background:rgba(139,92,246,.14)}
