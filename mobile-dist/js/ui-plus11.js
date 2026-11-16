@@ -6,7 +6,7 @@
   const ls = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
   const sv = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  const AU = "https://api.audius.co/v1"\;
+  const AU = "https://api.audius.co/v1";
   const JID = "742f09e7";
   const GR = ["#f59e0b,#be123c", "#8b5cf6,#2563eb", "#0f766e,#4338ca", "#be123c,#7c3aed", "#047857,#2563eb"];
 
