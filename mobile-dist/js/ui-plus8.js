@@ -35,7 +35,7 @@
     return s;
   };
   const rowsDef = [
-    ["🇸🇦 عربي · Arabic hits", "/tracks/search?query=arabic&limit=25"],
+    ["عربي · Arabic hits", "/tracks/search?query=arabic&limit=25"],
     ["شعبي · Shaabi", "/tracks/search?query=shaabi&limit=25"],
     ["مهرجانات · Mahraganat", "/tracks/search?query=mahraganat&limit=25"],
     ["راي · Rai", "/tracks/search?query=rai&limit=25"],
