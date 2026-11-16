@@ -41,6 +41,7 @@ public final class VortexPlaybackService
                 true
         );
 
+        player.setWakeMode(C.WAKE_MODE_NETWORK);
         session =
                 new MediaSession.Builder(
                         this,

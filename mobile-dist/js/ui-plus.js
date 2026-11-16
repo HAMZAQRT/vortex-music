@@ -90,7 +90,8 @@
     $("fpDur").textContent = fmt(d);
   });
 
-  function playJam(i) {
+  function playJam(i, skipHook) {
+    if (!skipHook && window.VortexNativeHook && window.VortexNativeHook(jam, i, () => playJam(i, true))) { mode = "app"; return; }
     ji = i; const t = jam[i]; mode = "jam";
     jamSrc = new URL(t.audio).href;
     audio.src = t.audio;
