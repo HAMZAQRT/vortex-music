@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+*.backup*
+generated/
+mobile-dist/audio/
+mobile-dist/audio/

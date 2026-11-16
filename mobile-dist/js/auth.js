@@ -1,0 +1,279 @@
+(() => {
+  const apiBase =
+    window.VORTEX_CONFIG
+      ?.apiBase ??
+    "";
+
+  let token =
+    null;
+
+  let user =
+    null;
+
+  async function hydrate() {
+    const session =
+      await window
+        .VortexNative
+        .loadSession();
+
+    token =
+      session.token;
+
+    user =
+      session.user;
+
+    return {
+      token,
+      user
+    };
+  }
+
+  function getToken() {
+    return token;
+  }
+
+  function getUser() {
+    return user;
+  }
+
+  async function saveSession(
+    nextToken,
+    nextUser
+  ) {
+    token =
+      nextToken;
+
+    user =
+      nextUser;
+
+    if (
+      !window.VortexNative ||
+      typeof window.VortexNative.saveSession !==
+        "function"
+    ) {
+      throw new Error(
+        "Vortex native session storage is unavailable"
+      );
+    }
+
+    await window.VortexNative
+      .saveSession(
+        nextToken,
+        nextUser
+      );
+  }
+
+  async function clearSession() {
+    token =
+      null;
+
+    user =
+      null;
+
+    await window
+      .VortexNative
+      .clearSession();
+  }
+
+  async function request(
+    path,
+    options = {}
+  ) {
+    const headers = {
+      Accept:
+        "application/json",
+      ...(options.headers ||
+        {})
+    };
+
+    if (token) {
+      headers.Authorization =
+        `Bearer ${token}`;
+    }
+
+    let response;
+
+    try {
+      response =
+        await fetch(
+          `${apiBase}${path}`,
+          {
+            ...options,
+            headers
+          }
+        );
+    } catch (error) {
+      console.error(
+        "Vortex API unavailable",
+        error
+      );
+
+      throw new Error(
+        "Cannot reach Vortex server"
+      );
+    }
+
+    let payload = {};
+
+    try {
+      payload =
+        await response.json();
+    } catch {
+      payload = {};
+    }
+
+    if (
+      response.status ===
+      401
+    ) {
+      await clearSession();
+    }
+
+    return {
+      response,
+      payload
+    };
+  }
+
+  async function login(
+    email,
+    password
+  ) {
+    const {
+      response,
+      payload
+    } =
+      await request(
+        "/api/mobile/auth/login",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              email,
+              password
+            })
+        }
+      );
+
+    if (
+      !response.ok ||
+      !payload.token
+    ) {
+      throw new Error(
+        payload.error ||
+        "Sign in failed"
+      );
+    }
+
+    await saveSession(
+      payload.token,
+      payload.user
+    );
+
+    return payload.user;
+  }
+
+  async function register(
+    data
+  ) {
+    const {
+      response,
+      payload
+    } =
+      await request(
+        "/api/mobile/auth/register",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(
+              data
+            )
+        }
+      );
+
+    if (
+      !response.ok ||
+      !payload.token
+    ) {
+      throw new Error(
+        payload.error ||
+        "Registration failed"
+      );
+    }
+
+    await saveSession(
+      payload.token,
+      payload.user
+    );
+
+    return payload.user;
+  }
+
+  async function refreshMe() {
+    if (!token) {
+      return null;
+    }
+
+    const {
+      response,
+      payload
+    } =
+      await request(
+        "/api/mobile/me"
+      );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    user =
+      payload.user;
+
+    await window
+      .VortexNative
+      .saveSession(
+        token,
+        user
+      );
+
+    return user;
+  }
+
+  async function logout() {
+    try {
+      if (token) {
+        await request(
+          "/api/mobile/auth/logout",
+          {
+            method:
+              "POST"
+          }
+        );
+      }
+    } finally {
+      await clearSession();
+    }
+  }
+
+  window.VortexAuth = {
+    hydrate,
+    login,
+    register,
+    logout,
+    refreshMe,
+    getToken,
+    getUser
+  };
+})();

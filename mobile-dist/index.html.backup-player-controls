@@ -1,0 +1,1286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#070709"
+  >
+
+  <title>Vortex</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #070709;
+      --panel: #111116;
+      --soft: #17171d;
+      --line: rgba(255,255,255,.07);
+      --muted: rgba(255,255,255,.44);
+      --purple: #8b5cf6;
+      --pink: #ec4899;
+      --cyan: #22d3ee;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: white;
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
+    }
+
+    body {
+      overscroll-behavior: none;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    #app {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding:
+        calc(env(safe-area-inset-top) + 18px)
+        18px
+        calc(env(safe-area-inset-bottom) + 154px);
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 13px;
+      font-weight: 1000;
+      letter-spacing: .34em;
+      color: #9b72ff;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background:
+        linear-gradient(
+          135deg,
+          #7c3aed,
+          #2563eb
+        );
+      display: grid;
+      place-items: center;
+      font-weight: 1000;
+    }
+
+    h1 {
+      margin: 28px 0 0;
+      font-size: clamp(34px, 10vw, 52px);
+      line-height: .98;
+      letter-spacing: -.045em;
+    }
+
+    .subtitle {
+      margin-top: 14px;
+      max-width: 330px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .search {
+      margin-top: 24px;
+      width: 100%;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #111116;
+      color: white;
+      outline: none;
+    }
+
+    .search::placeholder {
+      color: rgba(255,255,255,.24);
+    }
+
+    .hero {
+      position: relative;
+      margin-top: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      padding: 24px;
+      min-height: 210px;
+      background:
+        radial-gradient(
+          circle at 85% 20%,
+          rgba(139,92,246,.5),
+          transparent 32%
+        ),
+        linear-gradient(
+          135deg,
+          #181027,
+          #0c101b
+        );
+    }
+
+    .eyebrow {
+      color: #ba9cff;
+      font-size: 10px;
+      font-weight: 1000;
+      letter-spacing: .23em;
+    }
+
+    .hero-title {
+      margin-top: 12px;
+      max-width: 230px;
+      font-size: 29px;
+      line-height: 1.05;
+      font-weight: 1000;
+    }
+
+    .hero-copy {
+      margin-top: 12px;
+      max-width: 240px;
+      color: rgba(255,255,255,.45);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .play-main {
+      margin-top: 20px;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: white;
+      color: black;
+      font-weight: 1000;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 1000;
+    }
+
+    .section-link {
+      border: 0;
+      background: none;
+      color: #9670ff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .track-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .track {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 54px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 9px;
+      background: rgba(255,255,255,.025);
+      text-align: left;
+    }
+
+    .cover {
+      width: 54px;
+      height: 54px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(
+          135deg,
+          #6929c4,
+          #db2777
+        );
+      font-size: 19px;
+      font-weight: 1000;
+    }
+
+    .track:nth-child(2) .cover {
+      background:
+        linear-gradient(
+          135deg,
+          #0369a1,
+          #7c3aed
+        );
+    }
+
+    .track:nth-child(3) .cover {
+      background:
+        linear-gradient(
+          135deg,
+          #be123c,
+          #7c3aed
+        );
+    }
+
+    .track-name {
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .track-artist {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .more {
+      padding: 12px;
+      color: rgba(255,255,255,.35);
+      font-size: 20px;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .empty {
+      margin-top: 26px;
+      padding: 30px 20px;
+      border: 1px dashed var(--line);
+      border-radius: 26px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .pill {
+      display: inline-flex;
+      margin-top: 14px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(139,92,246,.13);
+      color: #b79cff;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .profile-card {
+      margin-top: 26px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background:
+        linear-gradient(
+          145deg,
+          #15151b,
+          #0b0b0e
+        );
+      text-align: center;
+    }
+
+    .profile-avatar {
+      margin: 0 auto;
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(
+          135deg,
+          #8b5cf6,
+          #2563eb
+        );
+      font-size: 31px;
+      font-weight: 1000;
+    }
+
+    .profile-name {
+      margin-top: 16px;
+      font-size: 25px;
+      font-weight: 1000;
+    }
+
+    .profile-user {
+      margin-top: 5px;
+      color: #a78bfa;
+      font-size: 13px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .metric {
+      padding: 14px 8px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.035);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 18px;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .mini {
+      position: fixed;
+      z-index: 20;
+      left: 12px;
+      right: 12px;
+      bottom:
+        calc(env(safe-area-inset-bottom) + 78px);
+      display: none;
+      grid-template-columns: 44px 1fr auto;
+      align-items: center;
+      gap: 11px;
+      padding: 9px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 20px;
+      background: rgba(19,19,24,.94);
+      backdrop-filter: blur(22px);
+      box-shadow:
+        0 16px 40px rgba(0,0,0,.38);
+    }
+
+    .mini.show {
+      display: grid;
+    }
+
+    .mini-cover {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background:
+        linear-gradient(
+          135deg,
+          #7c3aed,
+          #ec4899
+        );
+      display: grid;
+      place-items: center;
+      font-weight: 1000;
+    }
+
+    .mini-title {
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .mini-artist {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .pause {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 50%;
+      background: white;
+      color: black;
+      font-size: 15px;
+      font-weight: 1000;
+    }
+
+    .nav {
+      position: fixed;
+      z-index: 21;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(70px + env(safe-area-inset-bottom));
+      padding:
+        8px
+        14px
+        env(safe-area-inset-bottom);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--line);
+      background: rgba(7,7,9,.96);
+      backdrop-filter: blur(24px);
+    }
+
+    .nav button {
+      border: 0;
+      background: transparent;
+      color: rgba(255,255,255,.32);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .nav .icon {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 20px;
+    }
+
+    .nav button.active {
+      color: white;
+    }
+
+    .nav button.active .icon {
+      color: #9b72ff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main id="app">
+
+    <section
+      id="home"
+      class="view active"
+    >
+      <div class="top">
+        <div class="brand">
+          VORTEX
+        </div>
+
+        <button
+          class="avatar"
+          data-route="profile"
+          type="button"
+        >
+          V
+        </button>
+      </div>
+
+      <h1>
+        Your sound.
+        <br>
+        No limits.
+      </h1>
+
+      <p class="subtitle">
+        A different music universe built around discovery, identity and motion.
+      </p>
+
+      <input
+        id="homeSearch"
+        class="search"
+        placeholder="Search sounds, artists, people..."
+        type="search"
+      >
+
+      <article class="hero">
+        <div class="eyebrow">
+          VORTEX SIGNAL
+        </div>
+
+        <div class="hero-title">
+          Enter the next frequency.
+        </div>
+
+        <div class="hero-copy">
+          Start listening instantly. Your player stays with you across Vortex.
+        </div>
+
+        <button
+          id="heroPlay"
+          class="play-main"
+          type="button"
+        >
+          ▶ Play signal
+        </button>
+      </article>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">
+            For you
+          </div>
+
+          <button
+            class="section-link"
+            data-route="explore"
+            type="button"
+          >
+            Explore
+          </button>
+        </div>
+
+        <div
+          id="trackList"
+          class="track-list"
+        ></div>
+      </div>
+    </section>
+
+    <section
+      id="explore"
+      class="view"
+    >
+      <div class="top">
+        <div class="brand">
+          DISCOVER
+        </div>
+      </div>
+
+      <h1>
+        Find your
+        <br>
+        frequency.
+      </h1>
+
+      <input
+        id="exploreSearch"
+        class="search"
+        type="search"
+        placeholder="Search Vortex..."
+      >
+
+      <div class="section">
+        <div class="section-title">
+          Trending now
+        </div>
+
+        <div
+          id="exploreTracks"
+          class="track-list"
+          style="margin-top:14px"
+        ></div>
+      </div>
+    </section>
+
+    <section
+      id="library"
+      class="view"
+    >
+      <div class="top">
+        <div class="brand">
+          LIBRARY
+        </div>
+      </div>
+
+      <h1>
+        Yours.
+      </h1>
+
+      <p class="subtitle">
+        Saved music and offline downloads will live here.
+      </p>
+
+      <div
+        id="libraryContent"
+        class="empty"
+      >
+        Nothing saved yet.
+      </div>
+    </section>
+
+    <section
+      id="profile"
+      class="view"
+    >
+      <div class="top">
+        <div class="brand">
+          IDENTITY
+        </div>
+      </div>
+
+      <div class="profile-card">
+
+        <div class="profile-avatar">
+          H
+        </div>
+
+        <div class="profile-name">
+          Hamza
+        </div>
+
+        <div class="profile-user">
+          @hamza99
+        </div>
+
+        <div class="pill">
+          VORTEX LISTENER
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <strong>0</strong>
+            <span>FOLLOWERS</span>
+          </div>
+
+          <div class="metric">
+            <strong>0</strong>
+            <span>FOLLOWING</span>
+          </div>
+
+          <div class="metric">
+            <strong>0</strong>
+            <span>PLAYLISTS</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <audio
+    id="audio"
+    preload="metadata"
+  ></audio>
+
+  <aside
+    id="miniPlayer"
+    class="mini"
+  >
+    <div class="mini-cover">
+      V
+    </div>
+
+    <div>
+      <div
+        id="miniTitle"
+        class="mini-title"
+      >
+        Vortex Signal
+      </div>
+
+      <div
+        id="miniArtist"
+        class="mini-artist"
+      >
+        Vortex
+      </div>
+    </div>
+
+    <button
+      id="pauseButton"
+      class="pause"
+      type="button"
+    >
+      Ⅱ
+    </button>
+  </aside>
+
+  <nav class="nav">
+
+    <button
+      class="active"
+      data-route="home"
+      type="button"
+    >
+      <span class="icon">⌂</span>
+      Home
+    </button>
+
+    <button
+      data-route="explore"
+      type="button"
+    >
+      <span class="icon">◇</span>
+      Explore
+    </button>
+
+    <button
+      data-route="library"
+      type="button"
+    >
+      <span class="icon">♡</span>
+      Library
+    </button>
+
+    <button
+      data-route="profile"
+      type="button"
+    >
+      <span class="icon">○</span>
+      Profile
+    </button>
+
+  </nav>
+
+  <script>
+    const tracks = [
+      {
+        id: "alls-fair-in-love",
+        title: "Alls Fair In Love",
+        artist: "FreePD",
+        src: "./audio/alls-fair-in-love.mp3"
+      },
+      {
+        id: "attic-secrets",
+        title: "Attic Secrets",
+        artist: "FreePD",
+        src: "./audio/attic-secrets.mp3"
+      },
+      {
+        id: "barnville",
+        title: "Barnville",
+        artist: "FreePD",
+        src: "./audio/barnville.mp3"
+      },
+      {
+        id: "baltic-levity",
+        title: "Baltic Levity",
+        artist: "FreePD",
+        src: "./audio/baltic-levity.mp3"
+      }
+    ];
+
+    let playing = false;
+    let currentTrack = tracks[0];
+
+    const SAVED_KEY =
+      "vortex.savedTracks";
+
+    let savedIds = [];
+
+    try {
+      savedIds =
+        JSON.parse(
+          localStorage.getItem(
+            SAVED_KEY
+          ) || "[]"
+        );
+    } catch {
+      savedIds = [];
+    }
+
+    const saved =
+      new Set(
+        Array.isArray(
+          savedIds
+        )
+          ? savedIds
+          : []
+      );
+    const saved = new Set();
+
+    const views =
+      [...document.querySelectorAll(
+        ".view"
+      )];
+
+    const navButtons =
+      [...document.querySelectorAll(
+        ".nav button"
+      )];
+
+    function openRoute(route) {
+      views.forEach((view) => {
+        view.classList.toggle(
+          "active",
+          view.id === route
+        );
+      });
+
+      navButtons.forEach(
+        (button) => {
+          button.classList.toggle(
+            "active",
+            button.dataset.route ===
+              route
+          );
+        }
+      );
+
+      window.scrollTo({
+        top: 0,
+        behavior: "instant"
+      });
+    }
+
+    document
+      .querySelectorAll(
+        "[data-route]"
+      )
+      .forEach((button) => {
+        button.addEventListener(
+          "click",
+          () => {
+            openRoute(
+              button.dataset.route
+            );
+          }
+        );
+      });
+
+    function persistSaved() {
+      localStorage.setItem(
+        SAVED_KEY,
+        JSON.stringify(
+          [...saved]
+        )
+      );
+    }
+
+    function renderTracks(
+      targetId,
+      source
+    ) {
+      const target =
+        document.getElementById(
+          targetId
+        );
+
+      target.innerHTML = "";
+
+      source.forEach(
+        (track, index) => {
+          const row =
+            document.createElement(
+              "div"
+            );
+
+          row.className = "track";
+
+          row.innerHTML = `
+            <button
+              type="button"
+              class="track-main"
+              aria-label="Play ${track.title}"
+              style="
+                all:unset;
+                display:contents;
+                cursor:pointer;
+              "
+            >
+              <div class="cover">
+                ${index + 1}
+              </div>
+
+              <div>
+                <div class="track-name">
+                  ${track.title}
+                </div>
+
+                <div class="track-artist">
+                  ${track.artist}
+                </div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              class="more save-track"
+              aria-label="Save ${track.title}"
+            >
+              ${
+                saved.has(
+                  track.id
+                )
+                  ? "♥"
+                  : "♡"
+              }
+            </button>
+          `;
+
+          row
+            .querySelector(
+              ".track-main"
+            )
+            .addEventListener(
+              "click",
+              () => {
+                void playTrack(
+                  track
+                );
+              }
+            );
+
+          row
+            .querySelector(
+              ".save-track"
+            )
+            .addEventListener(
+              "click",
+              () => {
+                if (
+                  saved.has(
+                    track.id
+                  )
+                ) {
+                  saved.delete(
+                    track.id
+                  );
+                } else {
+                  saved.add(
+                    track.id
+                  );
+                }
+
+                persistSaved();
+                refreshLibrary();
+
+                renderTracks(
+                  "trackList",
+                  tracks
+                );
+
+                renderTracks(
+                  "exploreTracks",
+                  getExploreResults()
+                );
+              }
+            );
+
+          target.appendChild(
+            row
+          );
+        }
+      );
+    }
+
+    function getExploreResults() {
+      const input =
+        document.getElementById(
+          "exploreSearch"
+        );
+
+      const query =
+        input.value
+          .trim()
+          .toLowerCase();
+
+      if (!query) {
+        return tracks;
+      }
+
+      return tracks.filter(
+        (track) =>
+          track.title
+            .toLowerCase()
+            .includes(query) ||
+          track.artist
+            .toLowerCase()
+            .includes(query)
+      );
+    }
+
+    function refreshLibrary() {
+      const container =
+        document.getElementById(
+          "libraryContent"
+        );
+
+      const likedTracks =
+        tracks.filter(
+          (track) =>
+            saved.has(
+              track.id
+            )
+        );
+
+      if (
+        likedTracks.length ===
+        0
+      ) {
+        container.className =
+          "empty";
+
+        container.innerHTML =
+          "Nothing saved yet.";
+
+        return;
+      }
+
+      container.className =
+        "track-list";
+
+      container.innerHTML =
+        "";
+
+      likedTracks.forEach(
+        (track, index) => {
+          const row =
+            document.createElement(
+              "button"
+            );
+
+          row.type = "button";
+          row.className = "track";
+
+          row.innerHTML = `
+            <div class="cover">
+              ${index + 1}
+            </div>
+
+            <div>
+              <div class="track-name">
+                ${track.title}
+              </div>
+
+              <div class="track-artist">
+                ${track.artist}
+              </div>
+            </div>
+
+            <div class="more">
+              ▶
+            </div>
+          `;
+
+          row.addEventListener(
+            "click",
+            () => {
+              void playTrack(
+                track
+              );
+            }
+          );
+
+          container.appendChild(
+            row
+          );
+        }
+      );
+    }
+
+    const audio =
+      document.getElementById(
+        "audio"
+      );
+
+    async function playTrack(track) {
+      currentTrack = track;
+
+      if (
+        audio.getAttribute("src") !==
+        track.src
+      ) {
+        audio.src = track.src;
+        audio.load();
+      }
+
+      document.getElementById(
+        "miniPlayer"
+      ).classList.add("show");
+
+      document.getElementById(
+        "miniTitle"
+      ).textContent =
+        track.title;
+
+      document.getElementById(
+        "miniArtist"
+      ).textContent =
+        track.artist;
+
+      try {
+        await audio.play();
+      } catch (error) {
+        console.error(
+          "Vortex audio playback failed",
+          error
+        );
+      }
+    }
+
+    document.getElementById(
+      "heroPlay"
+    ).addEventListener(
+      "click",
+      () => playTrack(
+        tracks[0]
+      )
+    );
+
+    document.getElementById(
+      "pauseButton"
+    ).addEventListener(
+      "click",
+      async () => {
+        if (!audio.src) {
+          await playTrack(
+            currentTrack
+          );
+          return;
+        }
+
+        if (audio.paused) {
+          try {
+            await audio.play();
+          } catch (error) {
+            console.error(
+              "Vortex resume failed",
+              error
+            );
+          }
+        } else {
+          audio.pause();
+        }
+      }
+    );
+
+    audio.addEventListener(
+      "play",
+      () => {
+        playing = true;
+
+        document.getElementById(
+          "pauseButton"
+        ).textContent = "Ⅱ";
+      }
+    );
+
+    audio.addEventListener(
+      "pause",
+      () => {
+        playing = false;
+
+        document.getElementById(
+          "pauseButton"
+        ).textContent = "▶";
+      }
+    );
+
+    audio.addEventListener(
+      "ended",
+      () => {
+        const index =
+          tracks.findIndex(
+            (track) =>
+              track.id ===
+              currentTrack.id
+          );
+
+        const next =
+          tracks[
+            (index + 1) %
+            tracks.length
+          ];
+
+        void playTrack(next);
+      }
+    );
+
+    function connectSearch(
+      inputId
+    ) {
+      const input =
+        document.getElementById(
+          inputId
+        );
+
+      input.addEventListener(
+        "input",
+        () => {
+          const q =
+            input.value
+              .trim()
+              .toLowerCase();
+
+          const results =
+            tracks.filter(
+              (track) =>
+                track.title
+                  .toLowerCase()
+                  .includes(q) ||
+                track.artist
+                  .toLowerCase()
+                  .includes(q)
+            );
+
+          if (
+            inputId ===
+            "homeSearch" &&
+            q
+          ) {
+            openRoute(
+              "explore"
+            );
+
+            document.getElementById(
+              "exploreSearch"
+            ).value =
+              input.value;
+
+            renderTracks(
+              "exploreTracks",
+              results
+            );
+          } else if (
+            inputId ===
+            "exploreSearch"
+          ) {
+            renderTracks(
+              "exploreTracks",
+              q
+                ? results
+                : tracks
+            );
+          }
+        }
+      );
+    }
+
+    refreshLibrary();
+
+    renderTracks(
+      "trackList",
+      tracks
+    );
+
+    renderTracks(
+      "exploreTracks",
+      tracks
+    );
+
+    connectSearch(
+      "homeSearch"
+    );
+
+    connectSearch(
+      "exploreSearch"
+    );
+  </script>
+
+</body>
+</html>
