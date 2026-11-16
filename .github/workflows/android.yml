@@ -23,15 +23,32 @@ jobs:
           java-version: 21
       - run: npm ci --ignore-scripts
       - run: npx cap sync android
-      - name: Use fixed debug key
+      - name: Force fixed signing key
         run: |
-          mkdir -p ~/.android
+          test -f android/debug.keystore
+          mkdir -p ~/.gradle/init.d ~/.android
           cp android/debug.keystore ~/.android/debug.keystore
+          cat > ~/.gradle/init.d/sign.gradle << 'G'
+          allprojects { afterEvaluate { p ->
+            if (p.plugins.hasPlugin('com.android.application')) {
+              p.android.signingConfigs.debug {
+                storeFile file("${rootProject.projectDir}/debug.keystore")
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+              }
+            }
+          } }
+          G
       - name: Build
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug
+      - name: Print signing fingerprint
+        run: |
+          keytool -list -keystore android/debug.keystore -storepass android | grep -i "fingerprint"
+          $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | tail -1)/apksigner verify --print-certs android/app/build/outputs/apk/debug/app-debug.apk | grep "SHA-256"
       - uses: actions/upload-artifact@v4
         with:
           name: vortex-debug-apk
