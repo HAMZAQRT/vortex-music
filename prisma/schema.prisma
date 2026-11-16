@@ -307,3 +307,40 @@ model MobileSession {
   @@index([userId])
   @@index([expiresAt])
 }
+
+model VxRoom {
+  id         String   @id @default(cuid())
+  title      String
+  hostId     String
+  hostName   String
+  trackJson  String?
+  playing    Boolean  @default(false)
+  positionMs Int      @default(0)
+  syncedAt   DateTime @default(now())
+  status     String   @default("LIVE")
+  createdAt  DateTime @default(now())
+
+  @@index([status, syncedAt])
+}
+
+model VxMessage {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  name      String
+  kind      String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([roomId, createdAt])
+}
+
+model VxListener {
+  roomId String
+  userId String
+  name   String
+  seenAt DateTime @default(now())
+
+  @@id([roomId, userId])
+  @@index([roomId, seenAt])
+}
