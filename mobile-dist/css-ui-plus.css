@@ -172,3 +172,9 @@
 #profile .hcard{flex:0 0 120px}
 #profile .hcard .hc{width:120px;height:120px}
 .wr-old{display:none!important}
+.fr{display:flex;gap:12px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
+.fr::-webkit-scrollbar{display:none}
+.fr button{flex:0 0 150px;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:rgba(255,255,255,.05);color:#fff;padding:12px;text-align:left}
+.fr b{display:block;font-size:13px}
+.fr small{display:block;margin-top:4px;color:rgba(255,255,255,.5);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fr i{display:inline-block;margin-top:8px;padding:5px 12px;border-radius:999px;background:var(--accent);font-style:normal;font-size:11px;font-weight:900}
